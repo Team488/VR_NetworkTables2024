@@ -17,6 +17,7 @@ Follow this to install Python packages for FRC: https://docs.wpilib.org/en/stabl
 pip install openvr OR download the installer at https://github.com/cmbruns/pyopenvr/releases
 
 Here is a pip list from a known working environment
+`code`
 Package                  Version
 ------------------------ -----------
 appdirs                  1.4.4
@@ -65,19 +66,20 @@ tomlkit                  0.13.2
 typing_extensions        4.12.2
 wheel                    0.43.0
 wpilib                   2024.3.2.1
+`code`
 
 ## Execution
 
 Plug-in lighthouse base stations and position them looking down on the tracker
 Place the tracker in an area with line-of-sight to the base stations
-plug the tracker dongle into the PC running the test (the code is currently hard-coded for the tracker/dongle combination #without sticker# labels)
+plug the tracker dongle into the PC running the test (the code is currently hard-coded for the tracker/dongle combination *without sticker* labels)
 
 run tracker_test.py
 run AdvantageScope
-  File->Connect to simulator
-  "+" Odometry view
-  drag pose to view
+  - File->Connect to simulator
+  - "+" Odometry view
+  - drag pose to view
   
 ## References
-https://github.com/TriadSemi/triad_openvr
-https://github.com/cmbruns/pyopenvr
+- https://github.com/TriadSemi/triad_openvr
+- https://github.com/cmbruns/pyopenvr
