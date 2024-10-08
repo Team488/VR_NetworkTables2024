@@ -4,20 +4,20 @@ This project provides for integration of virtual reality hardware and RoboRIO ne
 ## Hardware
 This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.com/products/additional-tracker). This is a 6 DOF tracker that works with SteamVR lighthouse technology. 
 ## Configuration
-This was tested using the FRC WPILib version of vscode.
-Install standard FRC software to configure a windows PC as an FRC software development and drive station system
+- This was tested using the FRC WPILib version of vscode.
+- Install standard FRC software to configure a windows PC as an FRC software development and drive station system
 
-Install AdvantageScope (if not already available)
-Install HTC Vive SteamVR https://www.vive.com/us/support/vive/category_howto/setting-up-for-the-first-time.html
-Install Python (if not already available)
-Install Python packages
+- Install AdvantageScope (if not already available)
+- Install HTC Vive SteamVR https://www.vive.com/us/support/vive/category_howto/setting-up-for-the-first-time.html
+- Install Python (if not already available)
+- Install Python packages
 
-Follow this to install Python packages for FRC: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/python-setup.html
+- Follow this to install Python packages for FRC: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/python-setup.html
 
-pip install openvr OR download the installer at https://github.com/cmbruns/pyopenvr/releases
-
+- pip install openvr OR download the installer at https://github.com/cmbruns/pyopenvr/releases
+  
+```
 Here is a pip list from a known working environment
-`code`
 Package                  Version
 ------------------------ -----------
 appdirs                  1.4.4
@@ -66,16 +66,16 @@ tomlkit                  0.13.2
 typing_extensions        4.12.2
 wheel                    0.43.0
 wpilib                   2024.3.2.1
-`code`
+```
 
 ## Execution
 
-Plug-in lighthouse base stations and position them looking down on the tracker
-Place the tracker in an area with line-of-sight to the base stations
-plug the tracker dongle into the PC running the test (the code is currently hard-coded for the tracker/dongle combination *without sticker* labels)
+- Plug-in lighthouse base stations and position them looking down on the tracker
+- Place the tracker in an area with line-of-sight to the base stations
+- plug the tracker dongle into the PC running the test (the code is currently hard-coded for the tracker/dongle combination *without sticker* labels)
 
-run tracker_test.py
-run AdvantageScope
+1. run tracker_test.py
+2. run AdvantageScope
   - File->Connect to simulator
   - "+" Odometry view
   - drag pose to view
