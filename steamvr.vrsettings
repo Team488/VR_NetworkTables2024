@@ -1,0 +1,123 @@
+{
+   "DesktopUI" : {
+      "pairing" : "569,261,800,600,0",
+      "settings_desktop" : "596,261,800,600,0"
+   },
+   "DismissedWarnings" : {
+      "DismissableWarning_UnknownHardwareDetected" : true
+   },
+   "audio" : {
+      "offPlaybackDevice" : "",
+      "offRecordDevice" : "",
+      "onPlaybackDevice" : "",
+      "onRecordDevice" : "",
+      "viveHDMIGain" : true
+   },
+   "camera" : {
+      "cameraBoundsColorGammaA" : 153,
+      "cameraBoundsColorGammaB" : 255,
+      "cameraBoundsColorGammaG" : 255,
+      "cameraBoundsColorGammaR" : 0,
+      "cameraBoundsStrength" : 78,
+      "enableCamera" : false,
+      "enableCameraForCollisionBounds" : false,
+      "enableCameraForRoomView" : false,
+      "enableCameraInDashboard" : false
+   },
+   "collisionBounds" : {
+      "CollisionBoundsCenterMarkerOn" : false,
+      "CollisionBoundsColorGammaA" : 153,
+      "CollisionBoundsColorGammaB" : 255,
+      "CollisionBoundsColorGammaG" : 255,
+      "CollisionBoundsColorGammaR" : 0,
+      "CollisionBoundsFadeDistance" : 0.69999999999999996,
+      "CollisionBoundsGroundPerimeterOn" : false,
+      "CollisionBoundsPlaySpaceOn" : false,
+      "CollisionBoundsStyle" : 0
+   },
+   "dashboard" : {
+      "arcadeMode" : false,
+      "enableDashboard" : true
+   },
+   "keyboard" : {
+      "OffsetLeftX" : 0,
+      "OffsetRightX" : 0,
+      "OffsetY" : 0,
+      "ScaleX" : 1.1000000000000001,
+      "ScaleY" : 1.1000000000000001,
+      "Smoothing" : false,
+      "TutorialCompletions" : 0
+   },
+   "notifications" : {
+      "DoNotDisturb" : false
+   },
+   "perfcheck" : {
+      "allowTimingStore" : false,
+      "heuristicActive" : true,
+      "perfTestData" : 0,
+      "saveTimingsOnExit" : false,
+      "warnInHMD" : false,
+      "warnOnlyOnce" : false
+   },
+   "power" : {
+      "autoLaunchSteamVROnButtonPress" : true,
+      "powerOffOnExit" : true,
+      "returnToWatchdogTimeout" : 0,
+      "turnOffControllersTimeout" : 300,
+      "turnOffScreensTimeout" : 5
+   },
+   "steamvr" : {
+      "CycleBackgroundImageTimeSec" : -1,
+      "activateMultipleDrivers" : true,
+      "allowAsyncReprojection" : true,
+      "allowInterleavedReprojection" : true,
+      "background" : "",
+      "backgroundCameraHeight" : 1.6000000000000001,
+      "backgroundDomeRadius" : 0,
+      "backgroundUseDomeProjection" : false,
+      "basestationPowerManagement" : 0,
+      "debugProcessPipe" : "",
+      "defaultMirrorView" : 0,
+      "directMode" : true,
+      "displayDebug" : false,
+      "displayDebugX" : 0,
+      "displayDebugY" : 0,
+      "enableDistortion" : true,
+      "enableHomeApp" : false,
+      "environment" : "",
+      "forceFadeOnBadTracking" : true,
+      "forceReprojection" : false,
+      "forcedDriver" : "null",
+      "forcedHmd" : "",
+      "gridColor" : "",
+      "installID" : "2348681928830011086",
+      "ipd" : 0.063,
+      "ipdOffset" : 0,
+      "lastVersionNotice" : "2.8.6",
+      "lastVersionNoticeDate" : "1729639405",
+      "loglevel" : 3,
+      "neverKillProcesses" : false,
+      "panelMask" : true,
+      "panelMaskVignette" : true,
+      "panelMaskVignetteWidth" : 2,
+      "playAreaColor" : "",
+      "renderTargetMultiplier" : 1,
+      "requireHmd" : false,
+      "retailDemo" : false,
+      "sendSystemButtonToAllApps" : false,
+      "setInitialDefaultHomeApp" : false,
+      "showMirrorView" : false,
+      "showStage" : false,
+      "speakersForwardYawOffsetDegrees" : 0,
+      "startCompositorFromAppLaunch" : true,
+      "startDashboardFromAppLaunch" : true,
+      "startMonitorFromAppLaunch" : true,
+      "startOverlayAppsFromDashboard" : true,
+      "usingSpeakers" : false
+   },
+   "userinterface" : {
+      "StatusAlwaysOnTop" : true,
+      "screenshotType" : 2,
+      "screenshots" : true
+   }
+}

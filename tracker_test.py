@@ -17,7 +17,8 @@ table = inst.getTable("pose")
 
 posePub = table.getStructTopic("pose", Pose2d).publish()
 
-inst.setServer("localhost")
+#inst.setServer("localhost")
+inst.setServer("127.0.0.1")
 inst.startClient4("example client")
 
 
@@ -36,8 +37,11 @@ if interval:
         pose = v.devices["tracker_1"].get_pose_euler()
         if pose:
             x, y, z, roll, pitch, yaw = pose
-            wpiPose = Pose2d(angle=yaw, x = x, y = z)
+            # Pitch corresponds to rotation around flat bottom of tracker.
+            # rotation from -180 to +180  degrees
+            wpiPose = Pose2d(angle=pitch, x = x, y = z)
             posePub.set(wpiPose)
+            print (wpiPose)
         else:
             print("dropped")
         sleep_time = interval-(time.time()-start)
