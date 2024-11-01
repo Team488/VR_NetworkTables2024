@@ -40,6 +40,8 @@ if interval:
             # Pitch corresponds to rotation around flat bottom of tracker.
             # rotation from -180 to +180  degrees
             wpiPose = Pose2d(angle=pitch, x = x, y = z)
+            # TODO: Add transformation matrix to map coordinates to FRC field
+            # TODO: Add Pose2D angle offset to map tracker rotation angle to robot's FRC field angle
             posePub.set(wpiPose)
             print (wpiPose)
         else:
