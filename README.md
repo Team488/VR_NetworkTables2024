@@ -74,8 +74,11 @@ wpilib                   2024.3.2.1
 - Place the tracker in an area with line-of-sight to the base stations
 - plug the tracker dongle into the PC running the test (the code is currently hard-coded for the tracker/dongle combination *without sticker* labels)
 
-1. run tracker_test.py
-2. run AdvantageScope
+1. run tracker_test.py to read points from the tracker. Place the tracker in known FRC field coordinates and note the corresponding coordinates in each coordinate system.
+2. map the FRC coordinate system to the lighthouse coordinate system by running "Coordinate Transformations.ipynb" notebook and entering points read from the tracker via tracker_test.py and cooresponding points on the FRC field. This will provide the transformation matrix needed for mapping tracker coordinates to FRC field coordinates. Copy this matrix to tracker_test.py for use only during this session (the matrix values must be recalculated if the lighthouse base stations are moved).
+3. run the python robot simulator (py -3 -m robotpy sim). See https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html
+4. run tracker_test.py (with updated transformation matrix)
+5. run AdvantageScope
   - File->Connect to simulator
   - "+" Odometry view
   - drag pose to view
