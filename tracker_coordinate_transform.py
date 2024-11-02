@@ -1,34 +1,33 @@
 import numpy as np
 
-# Example calibration points
-# 0,0: x=-0.242, y=-2.690
-# 2,0: x=-2.179, y=-3.207
-# 0,2: x=-0.773, y=-0.784
-# 2,2: x=-2.767, y=-1.304
+def compute_transformation_matrix(src_points, dst_points):
+    assert len(src_points) == len(dst_points) == 3, "Need three points for a unique solution"
+    
+    A = []
+    B = []
+    
+    for (src, dst) in zip(src_points, dst_points):
+        A.append([src[0], src[1], 1, 0, 0, 0])
+        A.append([0, 0, 0, src[0], src[1], 1])
+        B.append(dst[0])
+        B.append(dst[1])
+    
+    A = np.array(A)
+    B = np.array(B)
+    
+    # Solve the linear system
+    transform_params = np.linalg.solve(A, B)
+    
+    # Create the transformation matrix
+    transformation_matrix = np.array([
+        [transform_params[0], transform_params[1], transform_params[2]],
+        [transform_params[3], transform_params[4], transform_params[5]],
+        [0, 0, 1]
+    ])
+    
+    return transformation_matrix
 
-src_points = np.array([[-0.242, -2.690], [-2.179, -3.207], [-0.773, -0.784], [-2.767, -1.304]])
-dst_points = np.array([[0, 0], [2, 0], [0, 2], [2, 2]])
-
-# Prepare the matrix A and vector B
-A = []
-B = []
-for (x, y), (x_prime, y_prime) in zip(src_points, dst_points):
-    A.append([1, x, y, 0, 0, 0])
-    A.append([0, 0, 0, 1, x, y])
-    B.append(x_prime)
-    B.append(y_prime)
-
-A = np.array(A)
-B = np.array(B)
-
-# Solve the least squares problem
-transformation_matrix, _, _, _ = np.linalg.lstsq(A, B, rcond=None)
-
-# Reshape the transformation matrix
-transformation_matrix = transformation_matrix.reshape(2, 3)
-print("Transformation Matrix:")
-print(transformation_matrix)
-
-testTransform = np.dot(transformation_matrix,src_points)
-print("transform test")
-print(testTransform)
+def transform_point(point, transformation_matrix):
+    homogenous_point = np.array([point[0], point[1], 1])
+    transformed_point = np.dot(transformation_matrix, homogenous_point)
+    return transformed_point[:2]
