@@ -1,7 +1,7 @@
 {
    "DesktopUI" : {
       "pairing" : "569,261,800,600,0",
-      "settings_desktop" : "596,261,800,600,0"
+      "settings_desktop" : "195,97,800,600,0"
    },
    "DismissedWarnings" : {
       "DismissableWarning_UnknownHardwareDetected" : true
@@ -106,6 +106,7 @@
       "retailDemo" : false,
       "sendSystemButtonToAllApps" : false,
       "setInitialDefaultHomeApp" : false,
+      "showAdvancedSettings" : true,
       "showMirrorView" : false,
       "showStage" : false,
       "speakersForwardYawOffsetDegrees" : 0,

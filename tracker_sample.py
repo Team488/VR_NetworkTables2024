@@ -1,11 +1,18 @@
 import time
 
+
 start = time.time()
-interval = 1/250
-def __sleep(interval):        
+
+def __sleep(interval):       
     sleep_time = interval-(time.time()-start)
     if sleep_time>0:
         time.sleep(sleep_time)
+
+# def get_tracker():
+#     v = triad_openvr.triad_openvr()
+#     if not "tracker_1" in v.devices:
+#         return None
+#     return v.devices["tracker_1"]
 
 def collect_sample(tracker, interval, verbose=False):
     global start
@@ -21,12 +28,13 @@ def collect_sample(tracker, interval, verbose=False):
         if verbose:
             print("missed sample. collecting again.")
         pose = tracker.get_pose_euler()
-        __sleep()
+        __sleep(interval)
         start = time.time()
 
     if verbose:
-        print("collected sample: " + pose)
+        print("collected sample: ", str(pose))
 
     return pose 
-
-    
+def collect_position(tracker, interval, verbose = False):
+      x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose)
+      return (x, z)
