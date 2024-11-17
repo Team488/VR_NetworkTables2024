@@ -10,8 +10,8 @@
       "style": "0",
       "userScale": "2",
       "width": "1924",
-      "xpos": "-287",
-      "ypos": "265"
+      "xpos": "-7",
+      "ypos": "67"
     }
   },
   "Table": {
@@ -55,7 +55,7 @@
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1905,40",
+      "Pos": "1901,98",
       "Size": "500,1390"
     },
     "###RoboRIO": {
