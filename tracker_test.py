@@ -17,8 +17,8 @@ table = inst.getTable("pose")
 
 posePub = table.getStructTopic("pose", Pose2d).publish()
 
-#inst.setServer("localhost")
-inst.setServer("10.4.88.2")
+inst.setServer("localhost")
+#inst.setServer("10.4.88.2")
 #inst.setServer("127.0.0.1")
 inst.startClient4("example client")
 
@@ -43,7 +43,7 @@ if interval:
     #     print("Error: unable to get tracker")
     #     exit(1)
 
-    trans, scale, rotation = calibrate(tracker, CalibrateOptions(verbose = True, rate = 1/interval))
+    trans, scale, rotation = calibrate(tracker, CalibrateOptions(verbose = True, rate = 1/interval, xOffset = -5, yOffset = 5))
     while True:
         # Pitch corresponds to rotation around flat bottom of tracker.
         # rotation from -180 to +180  degrees
