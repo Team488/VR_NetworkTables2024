@@ -52,7 +52,7 @@ if interval:
 
         transformed_point = transform_point(point, trans, scale, 0)
 
-        angle = Rotation2d.fromDegrees(pitch - rotation) 
+        angle = Rotation2d.fromDegrees(-(pitch - rotation)) 
         translation = Translation2d(-transformed_point[0],transformed_point[1])
         wpiPose = Pose2d(translation,angle)
         posePub.set(wpiPose)

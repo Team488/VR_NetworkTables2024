@@ -65,7 +65,9 @@ def calibrate(tracker, args):
     if not args.infinite:
         print("Set tracker to 0, r position. Press enter to continue.")
         input()
-        fixingPoint = tracker_sample.collect_position(tracker, interval, args.verbose)
+        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose)
+        fixingPoint = (x,z)
+        fixingAngle = pitch
         print("Sweep tracker arm in a circle")
 
 
@@ -89,13 +91,12 @@ def calibrate(tracker, args):
 
     translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
     scale = (1,1)
-    rotation = calculate_angle(fixingPoint, (0,r))
     #transformed_points = [apply_transform([x,y],transformation_matrix) for x,y in circle_samples]
     if args.verbose:
         transformed_points = [transform_point((x,y), translation, scale, 0) for x,y in circle_samples]
         circle.plot_data_circle(transformed_points, 0, 0, r)
 
-    return (translation, scale, rotation)
+    return (translation, scale, fixingAngle)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='trackercal', description='A command line application for tracking and calculating events.')
