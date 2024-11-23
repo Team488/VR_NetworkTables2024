@@ -36,7 +36,50 @@ def compute_transformation_matrix(source_points, target_points):
     transformation_matrix = np.vstack([transformation_matrix, [0, 0, 1]])
     return transformation_matrix
 
+def transform_point_np(point, translation=(0, 0), scale=(1, 1), rotation=0):
+    x, y = point
+    dx, dy = translation
+    sx, sy = scale
+    theta = rotation
 
+    # Define the original coordinates (2D points)
+    points = np.array([
+        [x, y]
+        ])
+
+    # Define the scaling factors for x and y
+    scale_x = sx
+    scale_y = sy
+
+    # Define the rotation angle (in radians)
+    theta = rotation
+
+    # Define the rotation matrix
+    rotation_matrix = np.array([
+        [np.cos(theta), -np.sin(theta)],
+        [np.sin(theta), np.cos(theta)]
+    ])
+
+    # Define the translation vector
+    translation_vector = np.array([dx, dy])
+
+    # Apply the scaling
+    scaled_points = points * np.array([scale_x, scale_y])
+
+    # Apply the rotation
+    rotated_points = np.dot(scaled_points, rotation_matrix.T)
+
+    # Apply the translation
+    transformed_points = rotated_points + translation_vector
+
+    # Print the results
+    print("Original points:\n", points)
+    print("Scaled points:\n", scaled_points)
+    print("Rotated points:\n", rotated_points)
+    print("Transformed points:\n", transformed_points)
+    return transformed_points[0]
+
+    
 def transform_point(point, translation=(0, 0), scale=(1, 1), rotation=0):
     """
     Transforms a point using translation, scaling, and rotation.
