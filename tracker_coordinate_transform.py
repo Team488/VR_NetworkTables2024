@@ -1,5 +1,50 @@
 import numpy as np
 
+def find_affine_transform(src_points, dst_points):
+    """
+    Find the affine transformation matrix that maps src_points to dst_points.
+    
+    :param src_points: Source points in the original coordinate system.
+    :param dst_points: Destination points in the new coordinate system.
+    :return: 3x3 affine transformation matrix.
+    """
+    assert src_points.shape == dst_points.shape, "Source and destination points must have the same shape."
+    
+    # Create matrices for the affine transformation
+    n = src_points.shape[0]
+    A = np.zeros((2 * n, 6))
+    B = np.zeros((2 * n))
+
+    for i in range(n):
+        A[2 * i] = [src_points[i, 0], src_points[i, 1], 1, 0, 0, 0]
+        A[2 * i + 1] = [0, 0, 0, src_points[i, 0], src_points[i, 1], 1]
+        B[2 * i] = dst_points[i, 0]
+        B[2 * i + 1] = dst_points[i, 1]
+
+    # Solve for the affine transformation parameters
+    params, _, _, _ = np.linalg.lstsq(A, B, rcond=None)
+    transform_matrix = np.array([
+        [params[0], params[1], params[2]],
+        [params[3], params[4], params[5]],
+        [0, 0, 1]
+    ])
+
+    return transform_matrix
+
+def apply_transform(point, transform_matrix):
+    """
+    Apply the affine transformation to a point.
+    
+    :param point: The original point (x, y) in the first coordinate system.
+    :param transform_matrix: 3x3 affine transformation matrix.
+    :return: Transformed point (x', y') in the second coordinate system.
+    """
+    original_point = np.array([point[0], point[1], 1])
+    transformed_point = np.dot(transform_matrix, original_point)
+    return transformed_point[:2]
+
+
+
 def compute_transformation_matrix(source_points, target_points):
     # assert len(src_points) == len(dst_points) == 3, "Need three points for a unique solution"
     

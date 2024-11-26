@@ -28,63 +28,6 @@
                   "basestation_mode" : 4,
                   "faults" : 0,
                   "firmware_version" : 3002,
-                  "gravity_vector" : [ 0, 0.999969006, 0.00787377171 ],
-                  "nonce" : 64842,
-                  "reset_count" : 9,
-                  "sobChannel" : 10
-               },
-               "first_id" : 1,
-               "last_id" : 1,
-               "tilt" : {
-                  "pitch" : -0.00518074352,
-                  "roll" : 0.0170374382,
-                  "variance" : 39.4784203
-               },
-               "time_last_seen" : "1731787431"
-            },
-            {
-               "dynamic_state" : {
-                  "basestation_mode" : 4,
-                  "faults" : 0,
-                  "firmware_version" : 3002,
-                  "gravity_vector" : [ 0, 0.999504387, -0.0314804539 ],
-                  "nonce" : 64842,
-                  "reset_count" : 15,
-                  "sobChannel" : 10
-               },
-               "first_id" : 1,
-               "last_id" : 1,
-               "tilt" : {
-                  "pitch" : -0.00518074352,
-                  "roll" : 0.0170374382,
-                  "variance" : 39.4784203
-               },
-               "time_last_seen" : "1731787700"
-            },
-            {
-               "dynamic_state" : {
-                  "basestation_mode" : 4,
-                  "faults" : 0,
-                  "firmware_version" : 3002,
-                  "gravity_vector" : [ -0.00787352771, 0.999938011, -0.00787352771 ],
-                  "nonce" : 64842,
-                  "reset_count" : 17,
-                  "sobChannel" : 10
-               },
-               "first_id" : 1,
-               "last_id" : 1,
-               "tilt" : {
-                  "pitch" : -0.0159691684,
-                  "roll" : 0.0309301354,
-                  "variance" : 1.42850176e-05
-               },
-               "time_last_seen" : "1731789450"
-            },
-            {
-               "dynamic_state" : {
-                  "basestation_mode" : 4,
-                  "faults" : 0,
-                  "firmware_version" : 3002,
                   "gravity_vector" : [ -0.00787352771, 0.999938011, -0.00787352771 ],
                   "nonce" : 56957,
                   "reset_count" : 1,
@@ -207,11 +150,68 @@
                "first_id" : 1,
                "last_id" : 1,
                "tilt" : {
-                  "pitch" : -0.0720512122,
-                  "roll" : -0.0369437896,
-                  "variance" : 1.99015158e-05
+                  "pitch" : -0.0262010619,
+                  "roll" : 0.0132349385,
+                  "variance" : 1.35800465e-05
                },
                "time_last_seen" : "1731797568"
+            },
+            {
+               "dynamic_state" : {
+                  "basestation_mode" : 4,
+                  "faults" : 0,
+                  "firmware_version" : 3002,
+                  "gravity_vector" : [ -0.0236147288, 0.999690175, -0.00787157658 ],
+                  "nonce" : 63348,
+                  "reset_count" : 11,
+                  "sobChannel" : 10
+               },
+               "first_id" : 1,
+               "last_id" : 1,
+               "tilt" : {
+                  "pitch" : -0.0334427468,
+                  "roll" : 0.0248769466,
+                  "variance" : 1.55450277e-06
+               },
+               "time_last_seen" : "1732399743"
+            },
+            {
+               "dynamic_state" : {
+                  "basestation_mode" : 4,
+                  "faults" : 0,
+                  "firmware_version" : 3002,
+                  "gravity_vector" : [ -0.0157441273, 0.999752104, -0.0157441273 ],
+                  "nonce" : 37259,
+                  "reset_count" : 1,
+                  "sobChannel" : 10
+               },
+               "first_id" : 1,
+               "last_id" : 1,
+               "tilt" : {
+                  "pitch" : 0.0671958476,
+                  "roll" : 0.00975619443,
+                  "variance" : 1.69641753e-05
+               },
+               "time_last_seen" : "1732400739"
+            },
+            {
+               "dynamic_state" : {
+                  "basestation_mode" : 4,
+                  "faults" : 0,
+                  "firmware_version" : 3002,
+                  "gravity_vector" : [ -0.0157416891, 0.999597251, -0.0236125328 ],
+                  "nonce" : 591,
+                  "reset_count" : 1,
+                  "sobChannel" : 10
+               },
+               "first_id" : 1,
+               "last_id" : 1,
+               "tilt" : {
+                  "pitch" : -0.182960421,
+                  "roll" : 0.0782326907,
+                  "variance" : 1.81751366e-05
+               },
+               "time_last_seen" : "1732402497"
             }
          ]
       },
@@ -238,25 +238,6 @@
             "serialNumber" : 2397018737
          },
          "dynamic_states" : [
-            {
-               "dynamic_state" : {
-                  "basestation_mode" : 4,
-                  "faults" : 0,
-                  "firmware_version" : 3002,
-                  "gravity_vector" : [ 0.0393396057, 0.999225974, 0 ],
-                  "nonce" : 29829,
-                  "reset_count" : 10,
-                  "sobChannel" : 0
-               },
-               "first_id" : 1,
-               "last_id" : 1,
-               "tilt" : {
-                  "pitch" : -0.0278874133,
-                  "roll" : -0.011238697,
-                  "variance" : 1.78638711e-05
-               },
-               "time_last_seen" : "1730574216"
-            },
             {
                "dynamic_state" : {
                   "basestation_mode" : 4,
@@ -427,6 +408,25 @@
                   "variance" : 6.27765485e-06
                },
                "time_last_seen" : "1731797568"
+            },
+            {
+               "dynamic_state" : {
+                  "basestation_mode" : 4,
+                  "faults" : 0,
+                  "firmware_version" : 3002,
+                  "gravity_vector" : [ 0, 1, 0 ],
+                  "nonce" : 38799,
+                  "reset_count" : 14,
+                  "sobChannel" : 0
+               },
+               "first_id" : 1,
+               "last_id" : 1,
+               "tilt" : {
+                  "pitch" : -0.121002086,
+                  "roll" : -0.157620907,
+                  "variance" : 8.28579778e-06
+               },
+               "time_last_seen" : "1732402497"
             }
          ]
       }
@@ -435,9 +435,9 @@
       {
          "deviceClass" : "generic_tracker",
          "imu" : {
-            "acc_bias" : [ -2.32784534, 0.47625953, -0.326763749 ],
-            "acc_scale" : [ 1.31846154, 1.13043129, 1.10446405 ],
-            "gyro_bias" : [ 0.0127970893, 0.0145106278, -0.00272506452 ]
+            "acc_bias" : [ 5.28928757, -0.883180022, 1.6631763 ],
+            "acc_scale" : [ 0.625665307, 1.63649166, 0.603399098 ],
+            "gyro_bias" : [ 0.0106405057, 0.0180287175, -0.00496513676 ]
          },
          "serialNumber" : "LHR-732AA606"
       },
@@ -460,20 +460,20 @@
             {
                "base_serial_number" : 2397018737,
                "target_pose" : {
-                  "pose" : [ -0.016527161, 0.764300942, -0.0367468745, 0.643599749, 3.31544662, -0.240679413, -3.92156887 ],
+                  "pose" : [ 0.00840284489, -0.915576458, 0.0383753553, 0.400220573, -1.52364397, -0.314756721, -5.3637228 ],
                   "target_serial_number" : 0,
-                  "variance" : 6.14726814e-05
+                  "variance" : 7.27314036e-05
                }
             }
          ],
          "id" : "1729370987",
          "tilt" : {
-            "pitch" : -0.0720512271,
-            "roll" : -0.0369437933,
-            "variance" : 1.99015158e-05
+            "pitch" : -0.109608054,
+            "roll" : 0.180891186,
+            "variance" : 8.10171987e-05
          },
          "tilt_to_pose_method" : 0
       }
    ],
-   "revision" : 182
+   "revision" : 229
 }
