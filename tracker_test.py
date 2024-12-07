@@ -17,10 +17,11 @@ table = inst.getTable("pose")
 
 posePub = table.getStructTopic("pose", Pose2d).publish()
 
+
 inst.setServer("localhost")
 #inst.setServer("10.4.88.2")
 #inst.setServer("127.0.0.1")
-inst.startClient4("example client")
+inst.startClient4("Tracker client")
 
 if len(sys.argv) == 1:
     interval = 1/250
