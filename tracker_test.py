@@ -35,23 +35,26 @@ args = parser.parse_args()
 
 inst = ntcore.NetworkTableInstance.getDefault()
 inst.setServer(args.address)
-inst.startClient4("tracker_test")
+inst.startClient4("VR_trackers")
 
-table = inst.getTable("pose")
+table = inst.getTable("Tracker_1")
 
-posePub = table.getStructTopic("pose", Pose2d).publish()
+posePub = table.getStructTopic("Tracker_1", Pose2d).publish()
 
 trans = (0, 0)
 scale = (1, 1)
 rotation = 0
 interval = 1/250
 
+# Get the calibration information from a previous calibration step that was saved to a file
+# Default file name is "transform.txt"
 if args.file != "":
     with open(args.file, 'r') as file:
         trans, scale, rotation = eval(file.read())
 doCalibrate = False  
 
 if interval:
+    
     v = triad_openvr.triad_openvr()
     if not "tracker_1" in v.devices:
         print("Note: unable to get tracker_1")
@@ -75,11 +78,8 @@ if interval:
 
     tracker_1= v.devices["tracker_1"]
 
-    # tracker = tracker_sample.get_tracker()
-    # if not tracker:
-    #     print("Error: unable to get tracker")
-    #     exit(1)
-
+    # Calibrate and save calibration information to the file "transform.txt"
+    # Tracker 1 should be used for calibration
     if args.file == "":
         trans, scale, rotation = calibrate(tracker_1, CalibrateOptions(args))
         with open("transform.txt", "w") as file:
@@ -88,8 +88,10 @@ if interval:
     ry = 0
     tx = 0
     ty = 0
+    
+    # Synchronize the pose position between the robot and the tracker
     if args.adjustToRobot:
-
+        # Get the current robot pose so that the tracker can be synchronized
         robotPoseTable = inst.getTable("/AdvantageKit/RealOutputs/PoseSubsystem")
         robotPoseSubX = robotPoseTable.getFloatTopic("/AdvantageKit/RealOutputs/PoseSubsystem/RobotPose/translation/x").subscribe(999.0)
         robotPoseSub = robotPoseTable.getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
@@ -105,8 +107,10 @@ if interval:
         tx, ty = cx - x, cy - y
         print (tx, ty)
         print (x, y)
-        rotation = pitch - robotPose.rotation().degrees()
         
+        
+        rotation = pitch - robotPose.rotation().degrees()
+
         print("Hit Enter to continue")
         input()
         #trans = tx, ty
