@@ -64,12 +64,14 @@ if interval:
     #     print("Error: unable to get tracker")
     #     exit(1)
 
-    # if args.file == "":
-    #     trans, scale, rotation = calibrate(tracker, CalibrateOptions(args))
-    #     with open("transform.txt", "w") as file:
-    #         file.write(str((trans,scale,rotation)))
+    if args.file == "":
+        trans, scale, rotation = calibrate(tracker, CalibrateOptions(args))
+        with open("transform.txt", "w") as file:
+            file.write(str((trans,scale,rotation)))
     rx = 0
     ry = 0
+    tx = 0
+    ty = 0
     if args.adjustToRobot:
 
         robotPoseTable = inst.getTable("/AdvantageKit/RealOutputs/PoseSubsystem")
