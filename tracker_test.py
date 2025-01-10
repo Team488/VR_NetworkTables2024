@@ -54,10 +54,26 @@ doCalibrate = False
 if interval:
     v = triad_openvr.triad_openvr()
     if not "tracker_1" in v.devices:
-        print("Error: unable to get tracker")
+        print("Note: unable to get tracker_1")
+        tracker_1_found = False
+    else:
+        print("Success: tracker_1 found")
+        tracker_1_found = True
+        
+    if not "tracker_2" in v.devices:
+        print("Note: unable to get tracker_2")
+        tracker_2_found = False
+    else:
+        print("Success: tracker_2 found")
+        tracker_2_found = True
+        
+    if (not tracker_1_found) and (not tracker_2_found):
+        print("Error: no trackers found")
         exit(1)
- 
-    tracker= v.devices["tracker_1"]
+    print("Hit Enter to continue")
+    input()
+
+    tracker_1= v.devices["tracker_1"]
 
     # tracker = tracker_sample.get_tracker()
     # if not tracker:
@@ -65,7 +81,7 @@ if interval:
     #     exit(1)
 
     if args.file == "":
-        trans, scale, rotation = calibrate(tracker, CalibrateOptions(args))
+        trans, scale, rotation = calibrate(tracker_1, CalibrateOptions(args))
         with open("transform.txt", "w") as file:
             file.write(str((trans,scale,rotation)))
     rx = 0
@@ -82,7 +98,7 @@ if interval:
         cx = robotPose.X() 
         cy = robotPose.Y() 
         print(cx, cy)
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval= interval, verbose=True)
+        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
         cx = robotPose.X() 
         cy = robotPose.Y() 
         print(cx, cy)
@@ -90,6 +106,8 @@ if interval:
         print (tx, ty)
         print (x, y)
         rotation = pitch - robotPose.rotation().degrees()
+        
+        print("Hit Enter to continue")
         input()
         #trans = tx, ty
 
@@ -97,7 +115,7 @@ if interval:
     while True:
         # Pitch corresponds to rotation around flat bottom of tracker.
         # rotation from -180 to +180  degrees
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval= interval, verbose=True)
+        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
         #point = (x, z)  
 
         #transformed_point = transform_point(point, trans, scale, 0)
