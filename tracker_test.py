@@ -37,9 +37,10 @@ inst = ntcore.NetworkTableInstance.getDefault()
 inst.setServer(args.address)
 inst.startClient4("VR_trackers")
 
-table = inst.getTable("Tracker_1")
+table = inst.getTable("Trackers")
 
-posePub = table.getStructTopic("Tracker_1", Pose2d).publish()
+posePub_tracker_1 = table.getStructTopic("Tracker_1", Pose2d).publish()
+posePub_tracker_2 = table.getStructTopic("Tracker_2", Pose2d).publish()
 
 trans = (0, 0)
 scale = (1, 1)
@@ -119,7 +120,7 @@ if interval:
     while True:
         # Pitch corresponds to rotation around flat bottom of tracker.
         # rotation from -180 to +180  degrees
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
+        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=False)
         #point = (x, z)  
 
         #transformed_point = transform_point(point, trans, scale, 0)
@@ -127,6 +128,11 @@ if interval:
         angle = Rotation2d.fromDegrees(-(pitch - rotation)) 
         translation = Translation2d(x + tx, -(z + ty))
         wpiPose = Pose2d(translation,angle)
-        posePub.set(wpiPose)
-        print (wpiPose)
-        
+        posePub_tracker_1.set(wpiPose)
+        posePub_tracker_2.set(wpiPose)
+        #print (wpiPose)
+
+
+
+    
+   
