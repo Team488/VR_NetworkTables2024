@@ -75,6 +75,8 @@ def calibrate(tracker, args):
 
     if args.verbose:
         print("circle samples: " , str(circle_samples))
+        with open("circle_samples.txt", "w") as file:
+            file.write(str(circle_samples))
         
 
     xc, yc, r, sigma = circle.standardLSQ(circle_samples)

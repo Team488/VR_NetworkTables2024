@@ -1,7 +1,7 @@
 {
    "DesktopUI" : {
       "pairing" : "569,261,800,600,0",
-      "settings_desktop" : "222,211,800,600,0"
+      "settings_desktop" : "231,249,800,600,0"
    },
    "DismissedWarnings" : {
       "DismissableWarning_UnknownHardwareDetected" : true

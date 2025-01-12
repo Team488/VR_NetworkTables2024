@@ -100,16 +100,14 @@ if interval:
         robotPose = robotPoseSub.get()
         cx = robotPose.X() 
         cy = robotPose.Y() 
-        print(cx, cy)
+        print("current robot position (cx,cy): ",cx, cy)
         x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
         cx = robotPose.X() 
         cy = robotPose.Y() 
-        print(cx, cy)
         tx, ty = cx - x, cy - y
-        print (tx, ty)
-        print (x, y)
-        
-        
+        print ("current tracker position (x,y): ",x, y)
+        print ("offset to sync (tx,ty): ",tx, ty)
+              
         rotation = pitch - robotPose.rotation().degrees()
 
         print("Hit Enter to continue")
@@ -126,7 +124,8 @@ if interval:
         #transformed_point = transform_point(point, trans, scale, 0)
 
         angle = Rotation2d.fromDegrees(-(pitch - rotation)) 
-        translation = Translation2d(x + tx, -(z + ty))
+        #translation = Translation2d(x + tx, -(z + ty))
+        translation = Translation2d(x + tx, -(z+ty))
         wpiPose = Pose2d(translation,angle)
         posePub_tracker_1.set(wpiPose)
         posePub_tracker_2.set(wpiPose)
