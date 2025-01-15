@@ -78,6 +78,17 @@ class TestTransformationParams(unittest.TestCase):
                                (np.float64(-0.012160491581662682), np.float64(0.9692473829108))]
         self.R_custom, self.s_custom, self.t_custom = find_transformation_params(self.points1_custom, self.points2_custom)
 
+        # Circle scenario with scaling, rotation, and translation
+        angle_inc = 2 * np.pi / 10
+        self.points1_circle = [(np.cos(i * angle_inc), np.sin(i * angle_inc)) for i in range(10)]
+        scale = 1.5
+        rotation = np.pi / 6  # 30 degrees
+        translation = np.array([2, 3])
+        rotation_matrix = np.array([[np.cos(rotation), -np.sin(rotation)], [np.sin(rotation), np.cos(rotation)]])
+        self.points2_circle = [scale * np.dot(rotation_matrix, point) + translation for point in self.points1_circle]
+        self.R_circle, self.s_circle, self.t_circle = find_transformation_params(self.points1_circle, self.points2_circle)
+
+
     def test_find_transformation_params_basic(self):
         expected_R = np.array([[1., 0.], [0., 1.]])
         expected_s = 2.0
@@ -130,6 +141,23 @@ class TestTransformationParams(unittest.TestCase):
         self.assertAlmostEqual(self.s_custom, expected_s)
         np.testing.assert_array_almost_equal(self.t_custom, expected_t)
 
+    def test_find_transformation_params_circle(self):
+        self.assertIsInstance(self.R_circle, np.ndarray)
+        self.assertIsInstance(self.s_circle, float)
+        self.assertIsInstance(self.t_circle, np.ndarray)
+
+        # Check if the parameters are close to expected values
+        expected_scale = 1.5
+        expected_rotation = np.pi / 6
+        expected_translation = np.array([2, 3])
+        expected_rotation_matrix = np.array([[np.cos(expected_rotation), -np.sin(expected_rotation)], 
+                                            [np.sin(expected_rotation), np.cos(expected_rotation)]])
+        
+        np.testing.assert_array_almost_equal(self.R_circle, expected_rotation_matrix, decimal=6)
+        self.assertAlmostEqual(self.s_circle, expected_scale, places=6)
+        np.testing.assert_array_almost_equal(self.t_circle, expected_translation, decimal=6)
+
+
     def test_transform_coordinates(self):
         # Test basic transformation
         point = (1, 2)
@@ -161,9 +189,17 @@ class TestTransformationParams(unittest.TestCase):
         transformed_point = transform_coordinates(point, self.R_custom, self.s_custom, self.t_custom)
         self.assertIsInstance(transformed_point, np.ndarray)
         np.testing.assert_array_almost_equal(transformed_point, expected_transformed_point)
+
+    
+    def test_transform_coordinates_circle(self):
+        for point1, point2 in zip(self.points1_circle, self.points2_circle):
+            transformed_point = transform_coordinates(point1, self.R_circle, self.s_circle, self.t_circle)
+            np.testing.assert_array_almost_equal(transformed_point, point2, decimal=6)
+
+        # Check transformation of all points
+        transformed_points = [transform_coordinates(point, self.R_circle, self.s_circle, self.t_circle) for point in self.points1_circle]
+        np.testing.assert_array_almost_equal(transformed_points, self.points2_circle, decimal=6)
+
         
-
-
-
 if __name__ == '__main__':
     unittest.main()
