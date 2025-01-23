@@ -8,12 +8,8 @@ def __sleep(interval):
     if sleep_time>0:
         time.sleep(sleep_time)
 
-# def get_tracker():
-#     v = triad_openvr.triad_openvr()
-#     if not "tracker_1" in v.devices:
-#         return None
-#     return v.devices["tracker_1"]
 
+# Collect a pose from the tracker, but not more often than the specified time interval
 def collect_sample(tracker, interval, verbose=False):
     global start
     
@@ -35,6 +31,10 @@ def collect_sample(tracker, interval, verbose=False):
         print("collected sample: ", str(pose))
 
     return pose 
+
+# Collect the horizontal coordinates of the tracker. 
+# The x and z axes are the horizontal coordinates when the tracker is 
+# oriented with the mounting screw hole facing down.
 def collect_position(tracker, interval, verbose = False):
       x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose)
       return (x, z)

@@ -82,6 +82,11 @@ if interval:
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
     if args.file == "":
+        if not "tracker_1" in v.devices:
+            print("Error: unable to get tracker 1")
+            print("Make sure Tracker 1 is turned on for calibration")
+            print("Make sure the tracker 1 USB dongle is plugged in to your PC")
+            exit(1)
         trans, scale, rotation = calibrate(tracker_1, CalibrateOptions(args))
         with open("transform.txt", "w") as file:
             file.write(str((trans,scale,rotation)))
@@ -102,6 +107,7 @@ if interval:
         cy = robotPose.Y() 
         print("current robot position (cx,cy): ",cx, cy)
         x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
+        # cleanup TODO: negate x before using
         cx = robotPose.X() 
         cy = robotPose.Y() 
         tx, ty = cx - x, cy - y
@@ -119,15 +125,18 @@ if interval:
         # Pitch corresponds to rotation around flat bottom of tracker.
         # rotation from -180 to +180  degrees
         x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=False)
+        # cleanup TODO: negate x before using
         #point = (x, z)  
 
         #transformed_point = transform_point(point, trans, scale, 0)
 
         angle = Rotation2d.fromDegrees(-(pitch - rotation)) 
         #translation = Translation2d(x + tx, -(z + ty))
+        # cleanup TODO: make sure that this translation adjustment uses correct signs
         translation = Translation2d(x + tx, -(z+ty))
         wpiPose = Pose2d(translation,angle)
         posePub_tracker_1.set(wpiPose)
+        # cleanup TODO: add support for tracker 2
         posePub_tracker_2.set(wpiPose)
         #print (wpiPose)
 

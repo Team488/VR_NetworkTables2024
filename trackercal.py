@@ -66,6 +66,7 @@ def calibrate(tracker, args):
         print("Set tracker to 0, r position. Press enter to continue.")
         input()
         x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose)
+        # cleanup TODO: negate x value
         fixingPoint = (x,z)
         fixingAngle = pitch
         print("Sweep tracker arm in a circle")
@@ -84,6 +85,16 @@ def calibrate(tracker, args):
         print("Calculated circle with error: ", sigma, " xc: ", xc, " yc: ", yc, " r: ", r)
         circle.plot_data_circle(circle_samples, 0, 0, r)
 
+    #  cleanup TODO: 
+        # negate x values from circle_samples
+        # negated_circle_samples = [(-point[0],point[1]) for point in circle_samples]
+        # circle_samples = negated_circle_samples
+        # calculate rotation angle of circle_samples
+        # calculate FRC_circle_samples using circle xc, yc, and radius, along with rotation angle of circle_samples
+        # use circle_samples and FRC_circle samples to calculate translation, scale, and rotation matrices
+        # use transform_coordinates to generate FRC_circle_samples_verify
+        # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
+
     src_points = np.array([(xc, yc-r),(xc - r, yc),(xc, yc), (xc + r, yc), fixingPoint])
     dst_points = np.array([(0, -r), (-r, 0), (0,0), (r, 0), (0, r)])
 
@@ -98,6 +109,7 @@ def calibrate(tracker, args):
         transformed_points = [transform_point((x,y), translation, scale, 0) for x,y in circle_samples]
         circle.plot_data_circle(transformed_points, 0, 0, r)
 
+    # cleanup TODO: return translation, scale, and rotation matrices
     return (translation, scale, fixingAngle)
     
 if __name__ == "__main__":
@@ -118,7 +130,9 @@ if __name__ == "__main__":
     
     v = triad_openvr.triad_openvr()
     if not "tracker_1" in v.devices:
-        print("Error: unable to get tracker")
+        print("Error: unable to get tracker 1")
+        print("Make sure Tracker 1 is turned on for calibration")
+        print("Make sure the tracker 1 USB dongle is plugged in to your PC")
         exit(1)
  
     tracker= v.devices["tracker_1"]
