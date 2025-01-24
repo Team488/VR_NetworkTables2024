@@ -9,6 +9,7 @@ from tracker_coordinate_transform import *
 
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 
     
 
@@ -35,9 +36,42 @@ def extract_yvalues(samples):
         yvalues = [point[1] for point in samples]
         return yvalues
 
-def plot_samples(xsamples, ysamples, title, xlabel, ylabel):
-
+def plot_samples(samples, title, axislabel):
+    # Plot
+    plt.plot(samples, marker='o')
+    plt.title(title)
+    plt.xlabel('Sample Index')
+    plt.ylabel(axislabel)
+    plt.grid(True)
+    plt.show()
     return 
+
+def calculate_rotation_angle(point1, point2, center=(0, 0)):
+    """
+    Calculate the angle between two points on a circle with respect to the center.
+    Result is in radians.
+    """
+    # Convert points to vectors from the center
+    vector1 = np.subtract(point1, center)
+    vector2 = np.subtract(point2, center)
+
+    # Calculate the angle with atan2
+    angle1 = np.arctan2(vector1[1], vector1[0])
+    angle2 = np.arctan2(vector2[1], vector2[0])
+
+    # Calculate the difference
+    angle = angle2 - angle1
+
+    # Normalize the result to be between -pi and pi
+    angle = (angle + np.pi) % (2 * np.pi) - np.pi
+
+    return angle
+
+def get_angle_values(samples,xc, yc, initial_angle=np.pi/2):
+    angle_values = [calculate_rotation_angle(samples[0],point, (xc,yc)) for point in samples]
+    initial_angle = np.pi/2
+    angle_values = [(x + initial_angle) for x in angle_values]
+    return angle_values
 
 def collect_circle(tracker, number, sample_distance, interval, verbose):
     samples = []
