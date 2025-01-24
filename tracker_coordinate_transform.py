@@ -130,3 +130,21 @@ def transform_point(point, translation=(0, 0), scale=(1, 1), rotation=0):
     # Return the transformed (x', y') coordinates
     return transformed_point[0], transformed_point[1]
 
+def transform_coordinates(point, R, s, t):
+    """
+    Transform coordinates from system 1 to system 2 using the calculated
+    rotation matrix, scale factor, and translation vector.
+    """
+    point = np.array(point)
+    transformed_point = s * np.dot(R, point) + t
+    return transformed_point
+
+    # Arbitrary coordinate in system 1
+    # arbitrary_point = (x, y)  # Replace with your point
+
+    # transformed_point = transform_coordinates(arbitrary_point, R, s, t)
+    # print(f"Transformed coordinates: {transformed_point}")
+
+def transform_samples(samples, R, s, t):
+    transformed_samples = [transform_coordinates(sample, R, s, t) for sample in samples]
+    return transformed_samples

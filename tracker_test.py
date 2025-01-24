@@ -42,17 +42,19 @@ table = inst.getTable("Trackers")
 posePub_tracker_1 = table.getStructTopic("Tracker_1", Pose2d).publish()
 posePub_tracker_2 = table.getStructTopic("Tracker_2", Pose2d).publish()
 
-trans = (0, 0)
-scale = (1, 1)
+R = [[1, 0], [0, 1]]    # default to zero rotation
+s = 1.0                 # default to no scaling
+t = [0.0, 0.0]          # default to no translation
+
+
 rotation = 0
-interval = 1/250
+interval = 1/250 # 250 Hz time interval for sampling tracker data
 
 # Get the calibration information from a previous calibration step that was saved to a file
 # Default file name is "transform.txt"
 if args.file != "":
     with open(args.file, 'r') as file:
-        trans, scale, rotation = eval(file.read())
-doCalibrate = False  
+        R,s,t = eval(file.read())
 
 if interval:
     
@@ -87,34 +89,44 @@ if interval:
             print("Make sure Tracker 1 is turned on for calibration")
             print("Make sure the tracker 1 USB dongle is plugged in to your PC")
             exit(1)
-        trans, scale, rotation = calibrate(tracker_1, CalibrateOptions(args))
+        R,s,t = calibrate(tracker_1, CalibrateOptions(args))
+
+        # Save the transform calibration information to a file
         with open("transform.txt", "w") as file:
-            file.write(str((trans,scale,rotation)))
-    rx = 0
-    ry = 0
+            file.write(str((R,s,t)))
+   
+    # initialize the translation offset to zero
     tx = 0
     ty = 0
     
     # Synchronize the pose position between the robot and the tracker
     if args.adjustToRobot:
-        # Get the current robot pose so that the tracker can be synchronized
+        # Get the current robot pose, as self-reported via AdvantageKit, so that the tracker can be synchronized
         robotPoseTable = inst.getTable("/AdvantageKit/RealOutputs/PoseSubsystem")
         robotPoseSubX = robotPoseTable.getFloatTopic("/AdvantageKit/RealOutputs/PoseSubsystem/RobotPose/translation/x").subscribe(999.0)
         robotPoseSub = robotPoseTable.getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
-        time.sleep(5)
+        time.sleep(5) # Wait for the robot pose to be published. TODO: experiment with this value
         robotPose = robotPoseSub.get()
         cx = robotPose.X() 
         cy = robotPose.Y() 
-        print("current robot position (cx,cy): ",cx, cy)
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
-        # cleanup TODO: negate x before using
-        cx = robotPose.X() 
-        cy = robotPose.Y() 
+        
+        
+        # Get the current tracker position so that the tracker can be synchronized
+        xVR, yVR, zVR, rollVR, pitchVR, yawVR = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
+        # Negate tracker x value before using for consistency with the calibration/transformation functions
+        x = -xVR
+        y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
+        # Transform the tracker position to the robot coordinate system
+        pointVR =(x,y)
+        xFRC, yFRC = transform_coordinates(pointVR,R,s,t)
+
         tx, ty = cx - x, cy - y
-        print ("current tracker position (x,y): ",x, y)
-        print ("offset to sync (tx,ty): ",tx, ty)
+        if args.verbose:
+            print("current robot position (cx,cy): ",cx, cy)
+            print ("current tracker position (x,y): ",x, y)
+            print ("offset to sync (tx,ty): ",tx, ty)
               
-        rotation = pitch - robotPose.rotation().degrees()
+        rotation = pitchVR - robotPose.rotation().degrees()
 
         print("Hit Enter to continue")
         input()

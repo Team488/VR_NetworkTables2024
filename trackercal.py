@@ -155,24 +155,7 @@ def find_transformation_params(points1, points2):
     # print(f"Scale factor: {s}")
     # print(f"Translation vector: {t}")
 
-def transform_coordinates(point, R, s, t):
-    """
-    Transform coordinates from system 1 to system 2 using the calculated
-    rotation matrix, scale factor, and translation vector.
-    """
-    point = np.array(point)
-    transformed_point = s * np.dot(R, point) + t
-    return transformed_point
 
-    # Arbitrary coordinate in system 1
-    # arbitrary_point = (x, y)  # Replace with your point
-
-    # transformed_point = transform_coordinates(arbitrary_point, R, s, t)
-    # print(f"Transformed coordinates: {transformed_point}")
-
-def transform_samples(samples, R, s, t):
-    transformed_samples = [transform_coordinates(sample, R, s, t) for sample in samples]
-    return transformed_samples
 
 
 
@@ -251,7 +234,8 @@ def calibrate(tracker, args):
 
     # Calculate the (x,y) points for the calibration circle in the FRC coordinates, using the known starting point (0,r),
     # known center point (0,0), the radius r, and the angle values from VR sampled data points.
-    FRC_circle_samples = calculate_FRC_samples(circle_samples, xc, yc, r, initial_angle=np.pi/2)
+    # clean up TODO: use the specified center point of the FRC circle, not (0,0)
+    FRC_circle_samples = calculate_FRC_samples(circle_samples, xc, yc, r, xcFRC=0, ycFRC=0, initial_angle=np.pi/2)
 
     # Calculate the transformation parameters between the circle samples and the FRC circle samples
     # R is the rotation matrix, s is the scale factor, and t is the translation vector
@@ -262,14 +246,11 @@ def calibrate(tracker, args):
         print(f"Translation vector: {t}")
 
     #  cleanup TODO: 
-
-    
-    
-    # use transform_coordinates to generate FRC_circle_samples_verify
-    # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
-    
-    # cleanup TODO: use xOffset and yOffset to adjust the translation vector
-    # translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
+        # use transform_coordinates to generate FRC_circle_samples_verify
+        # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
+        
+        # cleanup TODO: use xOffset and yOffset to adjust the translation vector
+        # translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
 
     if args.verbose:
         transformed_points = transform_samples(circle_samples, R, s, t)
