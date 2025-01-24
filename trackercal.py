@@ -218,8 +218,8 @@ def calibrate(tracker, args):
         print("Set tracker to 0, r position. Press enter to continue.")
         input()
         x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose)
-        # cleanup TODO: negate x value
-        fixingPoint = (x,z)
+        # negate x value to match the coordinate system
+        fixingPoint = (-x,z)
         fixingAngle = pitch
         print("Sweep tracker arm in a circle")
 
@@ -227,42 +227,54 @@ def calibrate(tracker, args):
     circle_samples = collect_circle(tracker, args.samples if not args.infinite else -1, args.distance / 100, interval, args.verbose)
 
     if args.verbose:
+        # Save circle samples to file for debugging and testing
         print("circle samples: " , str(circle_samples))
         with open("circle_samples.txt", "w") as file:
             file.write(str(circle_samples))
-        
 
+    # negate x values from circle_samples
+    circle_samples = negate_xvalues(circle_samples)
+        
+    # fit circle parameters to circle_samples
     xc, yc, r, sigma = circle.standardLSQ(circle_samples)
     if args.verbose:
+        # sanity check for the circle fit
         print("Calculated circle with error: ", sigma, " xc: ", xc, " yc: ", yc, " r: ", r)
         circle.plot_data_circle(circle_samples, 0, 0, r)
 
-    #  cleanup TODO: 
-        # negate x values from circle_samples
-        # negated_circle_samples = [(-point[0],point[1]) for point in circle_samples]
-        # circle_samples = negated_circle_samples
-        # calculate rotation angle of circle_samples
-        # calculate FRC_circle_samples using circle xc, yc, and radius, along with rotation angle of circle_samples
-        # use circle_samples and FRC_circle samples to calculate translation, scale, and rotation matrices
-        # use transform_coordinates to generate FRC_circle_samples_verify
-        # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
+        # measure rotation angle values for each element in circle_samples, relative to the first element 
+        # this is just a sanity check to make sure the circle_samples are correct
+        # the angle values should start at pi/2 and increase by 2pi/n for each sample
+        angle_values = get_angle_values(circle_samples, xc, yc,initial_angle=np.pi/2)
+        plot_samples(angle_values,"Angle Values vs. Sample Index", "Angle Value")
 
-    src_points = np.array([(xc, yc-r),(xc - r, yc),(xc, yc), (xc + r, yc), fixingPoint])
-    dst_points = np.array([(0, -r), (-r, 0), (0,0), (r, 0), (0, r)])
+    # Calculate the (x,y) points for the calibration circle in the FRC coordinates, using the known starting point (0,r),
+    # known center point (0,0), the radius r, and the angle values from VR sampled data points.
+    FRC_circle_samples = calculate_FRC_samples(circle_samples, xc, yc, r, initial_angle=np.pi/2)
 
-    #transformation_matrix = ic(compute_transformation_matrix(src_points, dst_points))
-
-    #transformation_matrix = ic(find_affine_transform(src_points, dst_points))
-
-    translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
-    scale = (1,1)
-    #transformed_points = [apply_transform([x,y],transformation_matrix) for x,y in circle_samples]
+    # Calculate the transformation parameters between the circle samples and the FRC circle samples
+    # R is the rotation matrix, s is the scale factor, and t is the translation vector
+    R, s, t = find_transformation_params(circle_samples, FRC_circle_samples)
     if args.verbose:
-        transformed_points = [transform_point((x,y), translation, scale, 0) for x,y in circle_samples]
+        print(f"Rotation matrix: {R}")
+        print(f"Scale factor: {s}")
+        print(f"Translation vector: {t}")
+
+    #  cleanup TODO: 
+
+    
+    
+    # use transform_coordinates to generate FRC_circle_samples_verify
+    # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
+    
+    # cleanup TODO: use xOffset and yOffset to adjust the translation vector
+    # translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
+
+    if args.verbose:
+        transformed_points = transform_samples(circle_samples, R, s, t)
         circle.plot_data_circle(transformed_points, 0, 0, r)
 
-    # cleanup TODO: return translation, scale, and rotation matrices
-    return (translation, scale, fixingAngle)
+    return (R, s, t)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='trackercal', description='A command line application for tracking and calculating events.')

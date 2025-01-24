@@ -129,6 +129,7 @@ if interval:
         #point = (x, z)  
 
         #transformed_point = transform_point(point, trans, scale, 0)
+        # cleanup TODO: apply the new transform to the point
 
         angle = Rotation2d.fromDegrees(-(pitch - rotation)) 
         #translation = Translation2d(x + tx, -(z + ty))
