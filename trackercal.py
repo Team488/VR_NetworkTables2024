@@ -46,6 +46,31 @@ def plot_samples(samples, title, axislabel):
     plt.show()
     return 
 
+def plot_samples_2(samples1, samples2, title, axislabel):
+    # Plot
+    plt.plot(samples1, marker='o')
+    plt.plot(samples2, marker='x')
+    plt.title(title)
+    plt.xlabel('Sample Index')
+    plt.ylabel(axislabel)
+    plt.grid(True)
+    plt.show()
+    return
+
+def plot_circles_from_samples(samples1_x, samples1_y, samples2_x, samples2_y, 
+                         title, xaxislabel, yaxislabel):
+    fig, ax = plt.subplots()
+    # Set aspect to be square
+    ax.set_aspect('equal') 
+    ax.plot(samples1_x, samples1_y, marker='o')
+    ax.plot(samples2_x, samples2_y, marker='x')
+    plt.title(title)
+    plt.xlabel(xaxislabel)
+    plt.ylabel(yaxislabel)
+    # Set aspect to be square
+    plt.grid(True)
+    plt.show()
+
 def calculate_rotation_angle(point1, point2, center=(0, 0)):
     """
     Calculate the angle between two points on a circle with respect to the center.
@@ -72,6 +97,83 @@ def get_angle_values(samples,xc, yc, initial_angle=np.pi/2):
     initial_angle = np.pi/2
     angle_values = [(x + initial_angle) for x in angle_values]
     return angle_values
+
+def calculate_FRC_samples(samples, xc, yc, r, initial_angle=np.pi/2):
+    angle_values = get_angle_values(samples, xc, yc, initial_angle)
+    FRC_samples = [(r*np.cos(angle) + xc, r*np.sin(angle) + yc) for angle in angle_values]
+    return FRC_samples
+
+def samples_subset(samples, sample_interval, index_range):
+    subset = [point for i, point in enumerate(samples) if (i + 1) % sample_interval == 0][:index_range]
+    return subset
+
+def find_transformation_params(points1, points2):
+    """
+    Calculate the rotation matrix, scale factor, and translation vector
+    from points in system 1 to system 2.
+    """
+    # Convert points to numpy arrays
+    points1 = np.array(points1)
+    points2 = np.array(points2)
+
+    # Find the centroids of the points
+    centroid1 = np.mean(points1, axis=0)
+    centroid2 = np.mean(points2, axis=0)
+
+    # Center the points around the origin
+    centered_points1 = points1 - centroid1
+    centered_points2 = points2 - centroid2
+
+    # Compute the covariance matrix
+    H = np.dot(centered_points1.T, centered_points2)
+
+    # Compute the singular value decomposition
+    U, S, Vt = np.linalg.svd(H)
+    R = np.dot(Vt.T, U.T)
+
+    # Ensure that the rotation matrix is a proper rotation
+    if np.linalg.det(R) < 0:
+        Vt[-1, :] *= -1
+        R = np.dot(Vt.T, U.T)
+
+    # Compute the scale factor
+    var1 = np.var(centered_points1)
+    var2 = np.var(centered_points2)
+    s = np.sqrt(var2 / var1)
+
+    # Compute the translation vector
+    t = centroid2 - s * np.dot(R, centroid1)
+
+    return R, s, t
+    # Sample data
+    # points1 = [(x1, y1), (x2, y2), ...]  # Replace with your points in system 1
+    # points2 = [(x1', y1'), (x2', y2'), ...]  # Replace with your corresponding points in system 2
+
+    # R, s, t = find_transformation_params(points1, points2)
+    # print(f"Rotation matrix: {R}")
+    # print(f"Scale factor: {s}")
+    # print(f"Translation vector: {t}")
+
+def transform_coordinates(point, R, s, t):
+    """
+    Transform coordinates from system 1 to system 2 using the calculated
+    rotation matrix, scale factor, and translation vector.
+    """
+    point = np.array(point)
+    transformed_point = s * np.dot(R, point) + t
+    return transformed_point
+
+    # Arbitrary coordinate in system 1
+    # arbitrary_point = (x, y)  # Replace with your point
+
+    # transformed_point = transform_coordinates(arbitrary_point, R, s, t)
+    # print(f"Transformed coordinates: {transformed_point}")
+
+def transform_samples(samples, R, s, t):
+    transformed_samples = [transform_coordinates(sample, R, s, t) for sample in samples]
+    return transformed_samples
+
+
 
 def collect_circle(tracker, number, sample_distance, interval, verbose):
     samples = []
