@@ -98,9 +98,10 @@ def get_angle_values(samples,xc, yc, initial_angle=np.pi/2):
     angle_values = [(x + initial_angle) for x in angle_values]
     return angle_values
 
-def calculate_FRC_samples(samples, xc, yc, r, initial_angle=np.pi/2):
+def calculate_FRC_samples(samples, xc, yc, r, xcFRC=0,ycFRC=0,initial_angle=np.pi/2):
     angle_values = get_angle_values(samples, xc, yc, initial_angle)
-    FRC_samples = [(r*np.cos(angle) + xc, r*np.sin(angle) + yc) for angle in angle_values]
+    #FRC_samples = [(r*np.cos(angle) + xc, r*np.sin(angle) + yc) for angle in angle_values]
+    FRC_samples = [(r*np.cos(angle) + xcFRC, r*np.sin(angle) + ycFRC) for angle in angle_values]
     return FRC_samples
 
 def samples_subset(samples, sample_interval, index_range):
