@@ -23,6 +23,22 @@ class CalibrateOptions:
         self.yOffset = yOffset
 
 
+def negate_xvalues(samples):
+    negated_samples = [(-point[0],point[1]) for point in samples]
+    return negated_samples
+
+def extract_xvalues(samples):
+        xvalues = [point[0] for point in samples]
+        return xvalues
+
+def extract_yvalues(samples):
+        yvalues = [point[1] for point in samples]
+        return yvalues
+
+def plot_samples(xsamples, ysamples, title, xlabel, ylabel):
+
+    return 
+
 def collect_circle(tracker, number, sample_distance, interval, verbose):
     samples = []
     run_forever = number < 0
