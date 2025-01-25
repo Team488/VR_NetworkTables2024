@@ -27,8 +27,9 @@ parser.add_argument('-r', '--rate', action='store', help='Sampling rate of track
 parser.add_argument('-x', '--xOffset', action='store', help='offset the x coordinate transform by x amount', default = default.xOffset)
 parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordinate transform by y amount', default = default.yOffset)
 parser.add_argument('-a', '--address', action='store', help='address of the robot to connect to', default = '127.0.0.1')
-parser.add_argument('-f', '--file', action='store', help='calibration file to read', default = "")
+parser.add_argument('-f', '--file', action='store', help='coordinate transform constants file to read', default = "")
 parser.add_argument('-j', '--adjustToRobot', action = 'store_true', help='adjust tracker to robot position')
+parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)')
 # Parse the arguments
 args = parser.parse_args()
 
@@ -47,7 +48,7 @@ s = 1.0                 # default to no scaling
 t = [0.0, 0.0]          # default to no translation
 
 
-rotation = 0
+heading_offset = 0
 interval = 1/250 # 250 Hz time interval for sampling tracker data
 
 # Get the calibration information from a previous calibration step that was saved to a file
@@ -110,44 +111,32 @@ if interval:
         cx = robotPose.X() 
         cy = robotPose.Y() 
         
+        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=True)
         
-        # Get the current tracker position so that the tracker can be synchronized
-        xVR, yVR, zVR, rollVR, pitchVR, yawVR = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=True)
-        # Negate tracker x value before using for consistency with the calibration/transformation functions
-        x = -xVR
-        y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
-        # Transform the tracker position to the robot coordinate system
-        pointVR =(x,y)
-        xFRC, yFRC = transform_coordinates(pointVR,R,s,t)
-
-        tx, ty = cx - x, cy - y
+        # Calculate the offset to sync the tracker with the robot
+        tx, ty = cx - xFRC, cy - yFRC
         if args.verbose:
             print("current robot position (cx,cy): ",cx, cy)
-            print ("current tracker position (x,y): ",x, y)
+            print ("current tracker position (x,y): ",xFRC, yFRC)
             print ("offset to sync (tx,ty): ",tx, ty)
               
-        rotation = pitchVR - robotPose.rotation().degrees()
+        # Calculate the rotation offset to sync the tracker with the robot
+        heading_offset = headingVR - robotPose.rotation().degrees()
 
         print("Hit Enter to continue")
         input()
-        #trans = tx, ty
-
+        
 
     while True:
-        # Pitch corresponds to rotation around flat bottom of tracker.
-        # rotation from -180 to +180  degrees
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval= interval, verbose=False)
-        # cleanup TODO: negate x before using
-        #point = (x, z)  
+       # Get the current tracker position in FRC coordinates, and the heading in VR coordinates
+        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=False)
 
-        #transformed_point = transform_point(point, trans, scale, 0)
-        # cleanup TODO: apply the new transform to the point
-
-        angle = Rotation2d.fromDegrees(-(pitch - rotation)) 
-        #translation = Translation2d(x + tx, -(z + ty))
+        # Calculate the new angle value for the tracker pose using the tracker offset to match the initial robot heading
+        pose_heading = Rotation2d.fromDegrees(heading_offset - headingVR)
+        
         # cleanup TODO: make sure that this translation adjustment uses correct signs
-        translation = Translation2d(x + tx, -(z+ty))
-        wpiPose = Pose2d(translation,angle)
+        poseXY = Translation2d(xFRC + tx, yFRC + ty)
+        wpiPose = Pose2d(poseXY,pose_heading)
         posePub_tracker_1.set(wpiPose)
         # cleanup TODO: add support for tracker 2
         posePub_tracker_2.set(wpiPose)

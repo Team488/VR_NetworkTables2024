@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
     
 
 class CalibrateOptions:
-    def __init__(self, verbose = False, samples = 100, distance = 5, rate = 250, infinite = False, xOffset = 0, yOffset = 0) -> None:
+    def __init__(self, verbose = False, samples = 100, distance = 5, rate = 250, 
+                 infinite = False, xOffset = 0, yOffset = 0, offlineTest=False) -> None:
         self.verbose = verbose
         self.samples = samples
         self.distance = distance
@@ -22,6 +23,7 @@ class CalibrateOptions:
         self.infinite = infinite
         self.xOffset = xOffset
         self.yOffset = yOffset
+        self.offlineTest = offlineTest
 
 
 def negate_xvalues(samples):
@@ -159,14 +161,14 @@ def find_transformation_params(points1, points2):
 
 
 
-def collect_circle(tracker, number, sample_distance, interval, verbose):
+def collect_circle(tracker, number, sample_distance, interval, verbose, offlineTest=False):
     samples = []
     run_forever = number < 0
 
-    x, z= tracker_sample.collect_position(tracker, interval=interval, verbose=verbose)
+    x, z= tracker_sample.collect_position(tracker, interval=interval, verbose=verbose, offlineTest=False)
     prev_position = (x, z)
     while run_forever or len(samples) < number:
-        x, z = tracker_sample.collect_position(tracker, interval= interval, verbose = verbose)
+        x, z = tracker_sample.collect_position(tracker, interval= interval, verbose = verbose, offlineTest=False)
 
         px, pz = prev_position
         if not run_forever:
@@ -208,7 +210,7 @@ def calibrate(tracker, args):
         print("Sweep tracker arm in a circle")
 
 
-    circle_samples = collect_circle(tracker, args.samples if not args.infinite else -1, args.distance / 100, interval, args.verbose)
+    circle_samples = collect_circle(tracker, args.samples if not args.infinite else -1, args.distance / 100, interval, args.verbose, args.offlineTest)
 
     if args.verbose:
         # Save circle samples to file for debugging and testing
@@ -270,17 +272,21 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--infinite', action='store_true', help='Run forever and continuously output pose data instead of calibrating.', default = default.infinite)
     parser.add_argument('-x', '--xOffset', action='store', help='offset the x coordinate transform by x amount', default = default.xOffset)
     parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordinate transform by y amount', default = default.yOffset)
+    parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
     
     # Parse the arguments
     args = parser.parse_args()
     
     v = triad_openvr.triad_openvr()
-    if not "tracker_1" in v.devices:
+    if "tracker_1" in v.devices:
+        tracker= v.devices["tracker_1"]
+    else:
         print("Error: unable to get tracker 1")
         print("Make sure Tracker 1 is turned on for calibration")
         print("Make sure the tracker 1 USB dongle is plugged in to your PC")
-        exit(1)
- 
-    tracker= v.devices["tracker_1"]
-
+        if args.offlineTest:
+            tracker = None
+        else:
+            exit(1)
+        
     print(calibrate(tracker, args))
