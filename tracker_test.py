@@ -30,7 +30,8 @@ parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordi
 parser.add_argument('-a', '--address', action='store', help='address of the robot to connect to', default = '127.0.0.1')
 parser.add_argument('-f', '--file', action='store', help='coordinate transform constants file to read', default = "")
 parser.add_argument('-j', '--adjustToRobot', action = 'store_true', help='adjust tracker to robot position')
-parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)')
+parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
+    
 # Parse the arguments
 args = parser.parse_args()
 
