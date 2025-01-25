@@ -10,6 +10,7 @@ import time
 import numpy as np
 from icecream import ic
 from tracker_coordinate_transform import *
+from tracker_sample import *
 
 
 #inst.setServer("localhost")
@@ -60,27 +61,7 @@ if args.file != "":
 if interval:
     
     v = triad_openvr.triad_openvr()
-    if not "tracker_1" in v.devices:
-        print("Note: unable to get tracker_1")
-        tracker_1_found = False
-    else:
-        print("Success: tracker_1 found")
-        tracker_1_found = True
-        
-    if not "tracker_2" in v.devices:
-        print("Note: unable to get tracker_2")
-        tracker_2_found = False
-    else:
-        print("Success: tracker_2 found")
-        tracker_2_found = True
-        
-    if (not tracker_1_found) and (not tracker_2_found):
-        print("Error: no trackers found")
-        exit(1)
-    print("Hit Enter to continue")
-    input()
-
-    tracker_1= v.devices["tracker_1"]
+    tracker_1, tracker_2 = check_for_trackers(v,args.offlineTest)
 
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
@@ -89,7 +70,8 @@ if interval:
             print("Error: unable to get tracker 1")
             print("Make sure Tracker 1 is turned on for calibration")
             print("Make sure the tracker 1 USB dongle is plugged in to your PC")
-            exit(1)
+            if not args.offlineTest:
+                exit(1)
         R,s,t = calibrate(tracker_1, CalibrateOptions(args))
 
         # Save the transform calibration information to a file

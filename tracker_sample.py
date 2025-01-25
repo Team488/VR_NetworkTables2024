@@ -81,3 +81,29 @@ def collect_sample(tracker, interval, verbose=False, offlineTest=False):
 def collect_position(tracker, interval, verbose = False, offlineTest=False):
       x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose,offlineTest)
       return (x, z)
+
+def check_for_trackers(v,offlineTest):
+    if not "tracker_1" in v.devices:
+        print("Note: unable to get tracker_1")
+        tracker_1_found = False
+        tracker_1 = None
+    else:
+        print("Success: tracker_1 found")
+        tracker_1_found = True
+        tracker_1= v.devices["tracker_1"]
+        
+    if not "tracker_2" in v.devices:
+        print("Note: unable to get tracker_2")
+        tracker_2_found = False
+        tracker_2 = None
+    else:
+        print("Success: tracker_2 found")
+        tracker_2_found = True
+        tracker_2= v.devices["tracker_2"]
+        
+    if (not tracker_1_found) and (not tracker_2_found):
+        print("Error: no trackers found")
+        if not offlineTest:
+            exit(1)
+    return tracker_1, tracker_2
+
