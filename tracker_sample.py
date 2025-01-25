@@ -12,6 +12,8 @@ def __sleep(interval):
 
 # get and euler pose from the tracker or from an offline function, depending on the mode set by the offlineTest flag
 def get_offline_pose():
+    # return a continuous sine wave response
+    
     return (0, 0, 0, 0, 0, 0)
 
 def get_pose(tracker, offlineTest=False):
@@ -49,5 +51,5 @@ def collect_sample(tracker, interval, verbose=False, offlineTest=False):
 # The x and z axes are the horizontal coordinates when the tracker is 
 # oriented with the mounting screw hole facing down.
 def collect_position(tracker, interval, verbose = False, offlineTest=False):
-      x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose)
+      x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose,offlineTest)
       return (x, z)

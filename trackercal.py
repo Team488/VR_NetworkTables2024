@@ -165,10 +165,10 @@ def collect_circle(tracker, number, sample_distance, interval, verbose, offlineT
     samples = []
     run_forever = number < 0
 
-    x, z= tracker_sample.collect_position(tracker, interval=interval, verbose=verbose, offlineTest=False)
+    x, z= tracker_sample.collect_position(tracker, interval=interval, verbose=verbose, offlineTest=offlineTest)
     prev_position = (x, z)
     while run_forever or len(samples) < number:
-        x, z = tracker_sample.collect_position(tracker, interval= interval, verbose = verbose, offlineTest=False)
+        x, z = tracker_sample.collect_position(tracker, interval= interval, verbose = verbose, offlineTest=offlineTest)
 
         px, pz = prev_position
         if not run_forever:
@@ -203,7 +203,7 @@ def calibrate(tracker, args):
     if not args.infinite:
         print("Set tracker to 0, r position. Press enter to continue.")
         input()
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose)
+        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose,args.offlineTest)
         # negate x value to match the coordinate system
         fixingPoint = (-x,z)
         fixingAngle = pitch

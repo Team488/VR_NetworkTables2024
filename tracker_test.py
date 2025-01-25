@@ -111,7 +111,7 @@ if interval:
         cx = robotPose.X() 
         cy = robotPose.Y() 
         
-        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=True)
+        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=True,offlineTest=args.offlineTest)
         
         # Calculate the offset to sync the tracker with the robot
         tx, ty = cx - xFRC, cy - yFRC
@@ -129,7 +129,7 @@ if interval:
 
     while True:
        # Get the current tracker position in FRC coordinates, and the heading in VR coordinates
-        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=False)
+        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=False,offlineTest=args.offlineTest)
 
         # Calculate the new angle value for the tracker pose using the tracker offset to match the initial robot heading
         pose_heading = Rotation2d.fromDegrees(heading_offset - headingVR)
