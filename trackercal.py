@@ -258,7 +258,7 @@ def calibrate(tracker, args):
         transformed_points = transform_samples(circle_samples, R, s, t)
         circle.plot_data_circle(transformed_points, 0, 0, r)
 
-    return (R, s, t)
+    return R, s, t
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='trackercal', description='A command line application for tracking and calculating events.')

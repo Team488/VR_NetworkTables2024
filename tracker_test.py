@@ -57,7 +57,7 @@ interval = 1/250 # 250 Hz time interval for sampling tracker data
 # Default file name is "transform.txt"
 if args.file != "":
     with open(args.file, 'r') as file:
-        R,s,t = eval(file.read())
+        (R,s,t) = eval(file.read())
 
 if interval:
     

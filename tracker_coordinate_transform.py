@@ -1,5 +1,5 @@
 import numpy as np
-
+from tracker_sample import *
 
 
 def compute_transformation_matrix(source_points, target_points):
@@ -152,7 +152,7 @@ def transform_samples(samples, R, s, t):
 def get_current_tracker_position(tracker, interval, R, s, t, verbose=False, offlineTest=False):
     # The pitch value from the tracker is the heading in the robot coordinate system
     # The x and z values from the tracker are used to calculate the x and y values in the robot coordinate system
-    xVR, yVR, zVR, rollVR, pitchVR, yawVR = tracker.collect_sample(interval=interval, verbose=verbose, offlineTest=offlineTest)
+    xVR, yVR, zVR, rollVR, pitchVR, yawVR = collect_sample(tracker,interval=interval, verbose=verbose, offlineTest=offlineTest)
     # Negate tracker x value before using for consistency with the calibration/transformation functions
     x = -xVR
     y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
