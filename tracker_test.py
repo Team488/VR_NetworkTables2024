@@ -11,6 +11,7 @@ import numpy as np
 from icecream import ic
 from tracker_coordinate_transform import *
 from tracker_sample import *
+from numpy import array
 
 
 #inst.setServer("localhost")
@@ -31,7 +32,8 @@ parser.add_argument('-a', '--address', action='store', help='address of the robo
 parser.add_argument('-f', '--file', action='store', help='coordinate transform constants file to read', default = "")
 parser.add_argument('-j', '--adjustToRobot', action = 'store_true', help='adjust tracker to robot position')
 parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
-    
+parser.add_argument('-z', '--adjustToZero', action = 'store_true', help='set current location as (0,0)', default = False)
+  
 # Parse the arguments
 args = parser.parse_args()
 
@@ -73,7 +75,9 @@ if interval:
             print("Make sure the tracker 1 USB dongle is plugged in to your PC")
             if not args.offlineTest:
                 exit(1)
-        R,s,t = calibrate(tracker_1, CalibrateOptions(args))
+        calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
+        calibrate_options = CalibrateOptions(**calibrate_options_args)
+        R,s,t = calibrate(tracker_1, calibrate_options)
 
         # Save the transform calibration information to a file
         with open("transform.txt", "w") as file:
@@ -83,6 +87,31 @@ if interval:
     tx = 0
     ty = 0
     
+    # Synchronize the pose position between the robot and the tracker
+    if args.adjustToZero:
+        # Set to zero for now TODO: make this variable
+        xFRC_init = 4.0
+        yFRC_init = 4.0
+        heading_init = 0.0 # degrees
+        
+        cx = xFRC_init
+        cy = yFRC_init 
+        
+        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=True,offlineTest=args.offlineTest)
+        
+        # Calculate the offset to sync the tracker with the robot
+        tx, ty = cx - xFRC, cy - yFRC
+        if args.verbose:
+            print("current robot position (cx,cy): ",cx, cy)
+            print ("current tracker position (x,y): ",xFRC, yFRC)
+            print ("offset to sync (tx,ty): ",tx, ty)
+              
+        # Calculate the rotation offset to sync the tracker with the robot
+        heading_offset = headingVR - heading_init
+
+        print("Hit Enter to continue")
+        input()
+
     # Synchronize the pose position between the robot and the tracker
     if args.adjustToRobot:
         # Get the current robot pose, as self-reported via AdvantageKit, so that the tracker can be synchronized
