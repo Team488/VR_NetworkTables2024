@@ -4,7 +4,18 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "name": "Python: Current File -v -f transform.txt -z",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-v",
+                "-ftransform.txt",
+                "-z"
+            ],
+            "justMyCode": true
+        },
         {
             "name": "Python: Current File -v -f transform.txt -o -z",
             "type": "python",

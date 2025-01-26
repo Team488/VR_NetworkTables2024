@@ -13,6 +13,15 @@ from tracker_coordinate_transform import *
 from tracker_sample import *
 from numpy import array
 
+def update_wpiPose(tracker,interval, R, s, t, tx, ty, verbose=False, offlineTest=False):
+    # Get the current tracker position in FRC coordinates, and the heading in VR coordinates
+    xFRC, yFRC, headingVR = get_current_tracker_position(tracker, interval, R, s, t, verbose=False, offlineTest=args.offlineTest)
+
+    # Calculate the new angle value for the tracker pose using the tracker offset to match the initial robot heading
+    pose_heading = Rotation2d.fromDegrees(heading_offset - headingVR)
+    poseXY = Translation2d(xFRC + tx, yFRC + ty)
+    wpiPose = Pose2d(poseXY, pose_heading)
+    return wpiPose
 
 #inst.setServer("localhost")
 #inst.setServer("10.4.88.2")
@@ -140,19 +149,13 @@ if interval:
         
 
     while True:
-       # Get the current tracker position in FRC coordinates, and the heading in VR coordinates
-        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=False,offlineTest=args.offlineTest)
-
-        # Calculate the new angle value for the tracker pose using the tracker offset to match the initial robot heading
-        pose_heading = Rotation2d.fromDegrees(heading_offset - headingVR)
+       # Update the tracker poses
+        wpiPose_1 = update_wpiPose(tracker_1,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
+        wpiPose_2 = update_wpiPose(tracker_2,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
         
-        # cleanup TODO: make sure that this translation adjustment uses correct signs
-        poseXY = Translation2d(xFRC + tx, yFRC + ty)
-        wpiPose = Pose2d(poseXY,pose_heading)
-        posePub_tracker_1.set(wpiPose)
-        # cleanup TODO: add support for tracker 2
-        posePub_tracker_2.set(wpiPose)
-        #print (wpiPose)
+        posePub_tracker_1.set(wpiPose_1)
+        posePub_tracker_2.set(wpiPose_2)
+
 
 
 
