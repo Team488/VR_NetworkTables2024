@@ -33,11 +33,12 @@ default = CalibrateOptions()
 # Add optional arguments
 parser.add_argument('-v', '--verbose', action='store_true', help='Run the command in verbose mode.', default = default.verbose)
 parser.add_argument('-s', '--samples', action='store', help='Number of samples to collect when creating the circle.', default = default.samples)
-parser.add_argument('-d', '--distance', action='store', help='Distance between samples to collect, in centimeters', default = default.distance)
+parser.add_argument('-d', '--di stance', action='store', help='Distance between samples to collect, in centimeters', default = default.distance)
 parser.add_argument('-r', '--rate', action='store', help='Sampling rate of tracker.', default = default.rate)
 parser.add_argument('-x', '--xOffset', action='store', help='offset the x coordinate transform by x amount', default = default.xOffset)
 parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordinate transform by y amount', default = default.yOffset)
 parser.add_argument('-a', '--address', action='store', help='address of the robot to connect to', default = '127.0.0.1')
+#10.4.88.2, drive computer's IP address, 488_2024Comp, local Machine ip address :127.0.0.1
 parser.add_argument('-f', '--file', action='store', help='coordinate transform constants file to read', default = "")
 parser.add_argument('-j', '--adjustToRobot', action = 'store_true', help='adjust tracker to robot position')
 parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
@@ -99,8 +100,13 @@ if interval:
     # Synchronize the pose position between the robot and the tracker
     if args.adjustToZero:
         # Set to zero for now TODO: make this variable
-        xFRC_init = 4.0
-        yFRC_init = 4.0
+        # start line/upper wall blue side
+        #xFRC_init = 7.56
+        #yFRC_init = 8.05
+
+         # april tag 18
+        xFRC_init = 3.6576	
+        yFRC_init = 4.0259
         heading_init = 0.0 # degrees
         
         cx = xFRC_init
