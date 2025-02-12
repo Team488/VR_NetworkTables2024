@@ -56,6 +56,7 @@ table = inst.getTable("Trackers")
 
 posePub_tracker_1 = table.getStructTopic("Tracker_1", Pose2d).publish()
 posePub_tracker_2 = table.getStructTopic("Tracker_2", Pose2d).publish()
+posePub_tracker_2 = table.getStructTopic("Tracker_3", Pose2d).publish()
 
 R = [[1, 0], [0, 1]]    # default to zero rotation
 s = 1.0                 # default to no scaling
@@ -74,7 +75,7 @@ if args.file != "":
 if interval:
     
     v = triad_openvr.triad_openvr()
-    tracker_1, tracker_2 = check_for_trackers(v,args.offlineTest)
+    tracker_1, tracker_2, tracker_3 = check_for_trackers(v,args.offlineTest)
 
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
@@ -158,9 +159,11 @@ if interval:
        # Update the tracker poses
         wpiPose_1 = update_wpiPose(tracker_1,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
         wpiPose_2 = update_wpiPose(tracker_2,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
+        wpiPose_3 = update_wpiPose(tracker_3,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
         
         posePub_tracker_1.set(wpiPose_1)
         posePub_tracker_2.set(wpiPose_2)
+        posePub_tracker_2.set(wpiPose_3)
 
 
 
