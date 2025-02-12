@@ -20,6 +20,11 @@
           "type": "Tracker",
           "serial":"LHR-A688CB30"
         }
+        {
+          "name": "tracker_3",
+          "type": "Tracker",
+          "serial":"LHR-F9FBEBDD"
+        }
         
 
     ]
