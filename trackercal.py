@@ -268,49 +268,31 @@ def calibrate(tracker, args):
 # Tracker_3: AT#22 (4.90474, 3.306318)
 def calibrate_blue(tracker_1, tracker_2, tracker_3, args):
     interval = 1/args.rate
-
     if not args.infinite:
-        print("Set tracker to 0, r position. Press enter to continue.")
+        apriltag_samples = []
+        print("Localize trackers at known field points on blue alliance side.")
+        print ("Place Tracker_1 at  AprilTag #18 (3.6576, 4.0259)")
+        print ("Place Tracker_2 at  AprilTag #20 (4.90474, 4.745482)")
+        print ("Place Tracker_3 at  AprilTag #22 (4.90474, 3.306318)")
+        print("Press enter to continue.")
         input()
-        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval, args.verbose,args.offlineTest)
-        # negate x value to match the coordinate system
-        fixingPoint = (-x,z)
-        fixingAngle = pitch
-        print("Sweep tracker arm in a circle")
-
-
-    circle_samples = collect_circle(tracker_1, args.samples if not args.infinite else -1, args.distance / 100, interval, args.verbose, args.offlineTest)
-
+        for tracker in [tracker_1, tracker_2, tracker_3]:
+            x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose,args.offlineTest)
+            apriltag_samples.append((-x, z))
+            print(f"Tracker {tracker} at position: ({-x},{z})")
+        
     if args.verbose:
         # Save circle samples to file for debugging and testing
-        print("circle samples: " , str(circle_samples))
-        with open("circle_samples.txt", "w") as file:
-            file.write(str(circle_samples))
-
-    # negate x values from circle_samples
-    circle_samples = negate_xvalues(circle_samples)
-        
-    # fit circle parameters to circle_samples
-    xc, yc, r, sigma = circle.standardLSQ(circle_samples)
-    if args.verbose:
-        # sanity check for the circle fit
-        print("Calculated circle with error: ", sigma, " xc: ", xc, " yc: ", yc, " r: ", r)
-        circle.plot_data_circle(circle_samples, 0, 0, r)
-
-        # measure rotation angle values for each element in circle_samples, relative to the first element 
-        # this is just a sanity check to make sure the circle_samples are correct
-        # the angle values should start at pi/2 and increase by 2pi/n for each sample
-        angle_values = get_angle_values(circle_samples, xc, yc,initial_angle=np.pi/2)
-        plot_samples(angle_values,"Angle Values vs. Sample Index", "Angle Value")
-
-    # Calculate the (x,y) points for the calibration circle in the FRC coordinates, using the known starting point (0,r),
-    # known center point (0,0), the radius r, and the angle values from VR sampled data points.
-    # clean up TODO: use the specified center point of the FRC circle, not (0,0)
-    FRC_circle_samples = calculate_FRC_samples(circle_samples, xc, yc, r, xcFRC=0, ycFRC=0, initial_angle=np.pi/2)
-
+        print("AprilTag samples: " , str(apriltag_samples))
+        with open("AprilTag_samples.txt", "w") as file:
+            file.write(str(apriltag_samples))
+    # April Tag reference points for the blue alliance side, in meters for AT#18, AT#20, AT#22
+    apriltag_references = [(3.6576, 4.0259), (4.90474, 4.745482), (4.90474, 3.306318)]
+         
+    
     # Calculate the transformation parameters between the circle samples and the FRC circle samples
     # R is the rotation matrix, s is the scale factor, and t is the translation vector
-    R, s, t = find_transformation_params(circle_samples, FRC_circle_samples)
+    R, s, t = find_transformation_params(apriltag_samples, apriltag_references)
     if args.verbose:
         print(f"Rotation matrix: {R}")
         print(f"Scale factor: {s}")
@@ -324,8 +306,12 @@ def calibrate_blue(tracker_1, tracker_2, tracker_3, args):
         # translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
 
     if args.verbose:
-        transformed_points = transform_samples(circle_samples, R, s, t)
-        circle.plot_data_circle(transformed_points, 0, 0, r)
+        transformed_points = transform_samples(apriltag_samples, R, s, t)
+        # difference between transformed points and apriltag_references should be small
+        # calculate the error
+        error = np.linalg.norm(np.array(transformed_points) - np.array(apriltag_references))
+        print(f"Error: {error}")
+        #circle.plot_data_circle(transformed_points, 0, 0, 1.44)
 
     return R, s, t
     
@@ -351,6 +337,6 @@ if __name__ == "__main__":
     tracker_1, tracker_2, tracker_3 = check_for_trackers(v,args.offlineTest)
 
     if args.bluefield:
-        exit(1)  
+        print(calibrate_blue(tracker_1, tracker_2, tracker_3, args))
     else:
         print(calibrate(tracker_1, args))

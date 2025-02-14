@@ -43,6 +43,17 @@
             "justMyCode": true
         },
         {
+            "name": "Python: Current File -v -b",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-v",
+                "-b"
+            ],
+            "justMyCode": true
+        },
+        {
             "name": "Python: Current File -v -f transform.txt -o -z",
             "type": "python",
             "request": "launch",

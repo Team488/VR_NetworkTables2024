@@ -150,17 +150,19 @@ def transform_samples(samples, R, s, t):
     return transformed_samples
 
 def get_current_tracker_position(tracker, interval, R, s, t, verbose=False, offlineTest=False):
+    xFRC, yFRC, pitchVR = 0.0, 0.0, 0.0
     # The pitch value from the tracker is the heading in the robot coordinate system
     # The x and z values from the tracker are used to calculate the x and y values in the robot coordinate system
-    xVR, yVR, zVR, rollVR, pitchVR, yawVR = collect_sample(tracker,interval=interval, verbose=verbose, offlineTest=offlineTest)
-    # Negate tracker x value before using for consistency with the calibration/transformation functions
-    x = -xVR
-    y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
-    # Transform the tracker position to the robot coordinate system
-    pointVR =(x,y)
-    # Transform the tracker position to the robot coordinate system using the calibration parameters R, s, and t
-    # R is the rotation matrix, s is the scale factor, and t is the translation vector
-    xFRC, yFRC = transform_coordinates(pointVR,R,s,t)
+    if not (tracker == None):
+        xVR, yVR, zVR, rollVR, pitchVR, yawVR = collect_sample(tracker,interval=interval, verbose=verbose, offlineTest=offlineTest)
+        # Negate tracker x value before using for consistency with the calibration/transformation functions
+        x = -xVR
+        y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
+        # Transform the tracker position to the robot coordinate system
+        pointVR =(x,y)
+        # Transform the tracker position to the robot coordinate system using the calibration parameters R, s, and t
+        # R is the rotation matrix, s is the scale factor, and t is the translation vector
+        xFRC, yFRC = transform_coordinates(pointVR,R,s,t)
     
     # Return the transformed x and y values in the robot coordinate system, and the pitch value in the VR coordinate system
     return xFRC, yFRC, pitchVR

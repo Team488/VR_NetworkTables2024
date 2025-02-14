@@ -1,7 +1,7 @@
 import sys
 import ntcore
 from wpimath.geometry import Pose2d,Rotation2d,Translation2d
-from trackercal import calibrate, CalibrateOptions
+from trackercal import calibrate, CalibrateOptions, calibrate_blue
 import tracker_sample
 import triad_openvr
 import math
@@ -43,6 +43,7 @@ parser.add_argument('-f', '--file', action='store', help='coordinate transform c
 parser.add_argument('-j', '--adjustToRobot', action = 'store_true', help='adjust tracker to robot position')
 parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
 parser.add_argument('-z', '--adjustToZero', action = 'store_true', help='set current location as (0,0)', default = False)
+parser.add_argument('-b', '--bluefield', action = 'store_true', help='calibrate blue field ', default = default.bluefield)
   
 # Parse the arguments
 args = parser.parse_args()
@@ -56,7 +57,7 @@ table = inst.getTable("Trackers")
 
 posePub_tracker_1 = table.getStructTopic("Tracker_1", Pose2d).publish()
 posePub_tracker_2 = table.getStructTopic("Tracker_2", Pose2d).publish()
-posePub_tracker_2 = table.getStructTopic("Tracker_3", Pose2d).publish()
+posePub_tracker_3 = table.getStructTopic("Tracker_3", Pose2d).publish()
 
 R = [[1, 0], [0, 1]]    # default to zero rotation
 s = 1.0                 # default to no scaling
@@ -76,23 +77,41 @@ if interval:
     
     v = triad_openvr.triad_openvr()
     tracker_1, tracker_2, tracker_3 = check_for_trackers(v,args.offlineTest)
-
+    
+  
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
-    if args.file == "":
-        if not "tracker_1" in v.devices:
-            print("Error: unable to get tracker 1")
-            print("Make sure Tracker 1 is turned on for calibration")
-            print("Make sure the tracker 1 USB dongle is plugged in to your PC")
-            if not args.offlineTest:
-                exit(1)
+    if args.bluefield:
+    #    if (tracker_1==None) or (tracker_2==None) or (tracker_3==None):
+    #     print("Error: unable to get all trackers")
+    #     print("Make sure all trackers are turned on for calibration")
+    #     print("Make sure all tracker USB dongles are plugged in to your PC")
+    #     if not args.offlineTest:
+    #         exit(1)
+            
         calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
         calibrate_options = CalibrateOptions(**calibrate_options_args)
-        R,s,t = calibrate(tracker_1, calibrate_options)
+        R,s,t = calibrate_blue(tracker_1, tracker_2, tracker_3, calibrate_options)
 
         # Save the transform calibration information to a file
         with open("transform.txt", "w") as file:
             file.write(str((R,s,t)))
+    
+    else:
+        if args.file == "":
+            if not "tracker_1" in v.devices:
+                print("Error: unable to get tracker 1")
+                print("Make sure Tracker 1 is turned on for calibration")
+                print("Make sure the tracker 1 USB dongle is plugged in to your PC")
+                if not args.offlineTest:
+                    exit(1)
+            calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
+            calibrate_options = CalibrateOptions(**calibrate_options_args)
+            R,s,t = calibrate(tracker_1, calibrate_options)
+
+            # Save the transform calibration information to a file
+            with open("transform.txt", "w") as file:
+                file.write(str((R,s,t)))
    
     # initialize the translation offset to zero
     tx = 0
@@ -163,7 +182,7 @@ if interval:
         
         posePub_tracker_1.set(wpiPose_1)
         posePub_tracker_2.set(wpiPose_2)
-        posePub_tracker_2.set(wpiPose_3)
+        posePub_tracker_3.set(wpiPose_3)
 
 
 
