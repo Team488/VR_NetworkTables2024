@@ -115,11 +115,19 @@ def check_for_trackers(v,offlineTest):
         print("Success: tracker_2 found")
         tracker_2_found = True
         tracker_2= v.devices["tracker_2"]
+    if not "tracker_3" in v.devices:
+        print("Note: unable to get tracker_3")
+        tracker_3_found = False
+        tracker_3 = None
+    else:
+        print("Success: tracker_3 found")
+        tracker_3_found = True
+        tracker_3= v.devices["tracker_3"]
         
-    if (not tracker_1_found) and (not tracker_2_found):
+    if (not tracker_1_found) and (not tracker_2_found) and (not tracker_3_found):
         print("Error: no trackers found")
         if not offlineTest:
             exit(1)
-    return tracker_1, tracker_2
+    return tracker_1, tracker_2, tracker_3
 
 

@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 class CalibrateOptions:
     def __init__(self, verbose = False, samples = 100, distance = 5, rate = 250, 
-                 infinite = False, xOffset = 0, yOffset = 0, offlineTest=False) -> None:
+                 infinite = False, xOffset = 0, yOffset = 0, offlineTest=False, bluefield=False) -> None:
         self.verbose = verbose
         self.samples = samples
         self.distance = distance
@@ -24,6 +24,7 @@ class CalibrateOptions:
         self.xOffset = xOffset
         self.yOffset = yOffset
         self.offlineTest = offlineTest
+        self.bluefield = bluefield 
 
 
 def negate_xvalues(samples):
@@ -259,6 +260,74 @@ def calibrate(tracker, args):
         circle.plot_data_circle(transformed_points, 0, 0, r)
 
     return R, s, t
+
+# Calibrate the field using 3 known field points
+# tracker_1, tracker_2, tracker_3 are the trackers at the known field points
+# Tracker_1: AT#18 (3.6576, 4.0259)
+# Tracker_2: AT#20 (4.90474, 4.745482), 
+# Tracker_3: AT#22 (4.90474, 3.306318)
+def calibrate_blue(tracker_1, tracker_2, tracker_3, args):
+    interval = 1/args.rate
+
+    if not args.infinite:
+        print("Set tracker to 0, r position. Press enter to continue.")
+        input()
+        x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker_1, interval, args.verbose,args.offlineTest)
+        # negate x value to match the coordinate system
+        fixingPoint = (-x,z)
+        fixingAngle = pitch
+        print("Sweep tracker arm in a circle")
+
+
+    circle_samples = collect_circle(tracker_1, args.samples if not args.infinite else -1, args.distance / 100, interval, args.verbose, args.offlineTest)
+
+    if args.verbose:
+        # Save circle samples to file for debugging and testing
+        print("circle samples: " , str(circle_samples))
+        with open("circle_samples.txt", "w") as file:
+            file.write(str(circle_samples))
+
+    # negate x values from circle_samples
+    circle_samples = negate_xvalues(circle_samples)
+        
+    # fit circle parameters to circle_samples
+    xc, yc, r, sigma = circle.standardLSQ(circle_samples)
+    if args.verbose:
+        # sanity check for the circle fit
+        print("Calculated circle with error: ", sigma, " xc: ", xc, " yc: ", yc, " r: ", r)
+        circle.plot_data_circle(circle_samples, 0, 0, r)
+
+        # measure rotation angle values for each element in circle_samples, relative to the first element 
+        # this is just a sanity check to make sure the circle_samples are correct
+        # the angle values should start at pi/2 and increase by 2pi/n for each sample
+        angle_values = get_angle_values(circle_samples, xc, yc,initial_angle=np.pi/2)
+        plot_samples(angle_values,"Angle Values vs. Sample Index", "Angle Value")
+
+    # Calculate the (x,y) points for the calibration circle in the FRC coordinates, using the known starting point (0,r),
+    # known center point (0,0), the radius r, and the angle values from VR sampled data points.
+    # clean up TODO: use the specified center point of the FRC circle, not (0,0)
+    FRC_circle_samples = calculate_FRC_samples(circle_samples, xc, yc, r, xcFRC=0, ycFRC=0, initial_angle=np.pi/2)
+
+    # Calculate the transformation parameters between the circle samples and the FRC circle samples
+    # R is the rotation matrix, s is the scale factor, and t is the translation vector
+    R, s, t = find_transformation_params(circle_samples, FRC_circle_samples)
+    if args.verbose:
+        print(f"Rotation matrix: {R}")
+        print(f"Scale factor: {s}")
+        print(f"Translation vector: {t}")
+
+    #  cleanup TODO: 
+        # use transform_coordinates to generate FRC_circle_samples_verify
+        # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
+        
+        # cleanup TODO: use xOffset and yOffset to adjust the translation vector
+        # translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
+
+    if args.verbose:
+        transformed_points = transform_samples(circle_samples, R, s, t)
+        circle.plot_data_circle(transformed_points, 0, 0, r)
+
+    return R, s, t
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='trackercal', description='A command line application for tracking and calculating events.')
@@ -273,20 +342,15 @@ if __name__ == "__main__":
     parser.add_argument('-x', '--xOffset', action='store', help='offset the x coordinate transform by x amount', default = default.xOffset)
     parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordinate transform by y amount', default = default.yOffset)
     parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
+    parser.add_argument('-b', '--bluefield', action = 'store_true', help='calibrate blue field ', default = default.bluefield)
     
     # Parse the arguments
     args = parser.parse_args()
     
     v = triad_openvr.triad_openvr()
-    if "tracker_1" in v.devices:
-        tracker= v.devices["tracker_1"]
+    tracker_1, tracker_2, tracker_3 = check_for_trackers(v,args.offlineTest)
+
+    if args.bluefield:
+        exit(1)  
     else:
-        print("Error: unable to get tracker 1")
-        print("Make sure Tracker 1 is turned on for calibration")
-        print("Make sure the tracker 1 USB dongle is plugged in to your PC")
-        if args.offlineTest:
-            tracker = None
-        else:
-            exit(1)
-        
-    print(calibrate(tracker, args))
+        print(calibrate(tracker_1, args))
