@@ -183,9 +183,3 @@ if interval:
         posePub_tracker_1.set(wpiPose_1)
         posePub_tracker_2.set(wpiPose_2)
         posePub_tracker_3.set(wpiPose_3)
-
-
-
-
-    
-   

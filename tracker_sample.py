@@ -97,37 +97,24 @@ def collect_position(tracker, interval, verbose = False, offlineTest=False):
       x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose,offlineTest)
       return (x, z)
 
-def check_for_trackers(v,offlineTest):
-    if not "tracker_1" in v.devices:
-        print("Note: unable to get tracker_1")
-        tracker_1_found = False
-        tracker_1 = None
-    else:
-        print("Success: tracker_1 found")
-        tracker_1_found = True
-        tracker_1= v.devices["tracker_1"]
-        
-    if not "tracker_2" in v.devices:
-        print("Note: unable to get tracker_2")
-        tracker_2_found = False
-        tracker_2 = None
-    else:
-        print("Success: tracker_2 found")
-        tracker_2_found = True
-        tracker_2= v.devices["tracker_2"]
-    if not "tracker_3" in v.devices:
-        print("Note: unable to get tracker_3")
-        tracker_3_found = False
-        tracker_3 = None
-    else:
-        print("Success: tracker_3 found")
-        tracker_3_found = True
-        tracker_3= v.devices["tracker_3"]
-        
-    if (not tracker_1_found) and (not tracker_2_found) and (not tracker_3_found):
+def check_for_trackers(v, offlineTest):
+    trackers = ["tracker_1", "tracker_2", "tracker_3"]
+    found_trackers = {}
+
+    for tracker in trackers:
+        if tracker in v.devices:
+            print(f"Success: {tracker} found")
+            found_trackers[tracker] = v.devices[tracker]
+        else:
+            print(f"Note: unable to get {tracker}")
+            found_trackers[tracker] = None
+
+    if all(tracker is None for tracker in found_trackers.values()):
         print("Error: no trackers found")
         if not offlineTest:
             exit(1)
-    return tracker_1, tracker_2, tracker_3
+
+    return found_trackers["tracker_1"], found_trackers["tracker_2"], found_trackers["tracker_3"]
+
 
 
