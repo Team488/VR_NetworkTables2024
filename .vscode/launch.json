@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
     
         {
             "name": "Python: Current File -v -z -f transform.txt -a 10.4.88.2",
@@ -39,6 +40,18 @@
                 "-v",
                 "-z",
                 "-ftransform.txt"
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Current File -v -b -a 10.4.88.2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-v",
+                "-b",
+                "-a10.4.88.2"
             ],
             "justMyCode": true
         },
