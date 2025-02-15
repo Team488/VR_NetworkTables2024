@@ -278,8 +278,8 @@ def calibrate_blue(tracker_1, tracker_2, tracker_3, args):
         input()
         for tracker in [tracker_1, tracker_2, tracker_3]:
             x, y, z, roll, pitch, yaw = tracker_sample.collect_sample(tracker, interval, args.verbose,args.offlineTest)
-            apriltag_samples.append((x, z))
-            print(f"Tracker {tracker} at position: ({x},{z})")
+            apriltag_samples.append((-x, z))
+            print(f"Tracker {tracker} at position: ({-x},{z})")
         
     if args.verbose:
         # Save circle samples to file for debugging and testing

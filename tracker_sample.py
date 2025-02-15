@@ -113,6 +113,7 @@ def check_for_trackers(v, offlineTest):
         print("Error: no trackers found")
         if not offlineTest:
             exit(1)
+    
 
     return found_trackers["tracker_1"], found_trackers["tracker_2"], found_trackers["tracker_3"]
 

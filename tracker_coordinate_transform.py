@@ -156,8 +156,8 @@ def get_current_tracker_position(tracker, interval, R, s, t, verbose=False, offl
     if not (tracker == None):
         xVR, yVR, zVR, rollVR, pitchVR, yawVR = collect_sample(tracker,interval=interval, verbose=verbose, offlineTest=offlineTest)
         # Negate tracker x value before using for consistency with the calibration/transformation functions
-        #x = -xVR
-        x = xVR
+        x = -xVR
+        #x = xVR
         y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
         # Transform the tracker position to the robot coordinate system
         pointVR =(x,y)
