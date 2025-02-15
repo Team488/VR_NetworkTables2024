@@ -97,7 +97,8 @@ In this step, we will restart tracker_test using some options that will:
 3. Stream the tracker positions to a NetworkTables server at a specified IP Address (-a <IP Address>); typically 127.0.0.1 for running locally with a simulator, or an FRC address such as 10.4.88.2 when running on a live robot.
 
 To send to a NetworkTables server on your local machine, you must start the robot simulator
-- run the python robot simulator (== py -3 -m robotpy sim ==). See https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html
+- run the python robot simulator (see https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html)
+   ## py -3 -m robotpy sim
 - Place tracker_1 in the predefined location for the -z option (e.g., a know location for an AprilTag; you will need to verify this location by looking at the code)
 - run tracker_test.py -v -z -f transform.txt -a 127.0.0.1
 - Hit ENTER as prompted in the terminal window
