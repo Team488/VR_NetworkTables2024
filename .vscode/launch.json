@@ -6,6 +6,7 @@
     "configurations": [
 
 
+
     
         {
             "name": "Python: Current File -v -z -f transform.txt -a 10.4.88.2",
@@ -88,6 +89,18 @@
                 "-v",
                 "-ftransform.txt",
                 "-o"
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Current File -f transform.txt -a 10.4.88.2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-v",
+                "-ftransform.txt",
+                "-a10.4.88.2"
             ],
             "justMyCode": true
         },
