@@ -75,7 +75,7 @@ if args.file != "":
 
 if interval:
     
-    v = triad_openvr.triad_openvr()
+    v = triad_openvr.triad_openvr(configfile_path="./config.json")
     tracker_1, tracker_2, tracker_3 = check_for_trackers(v,args.offlineTest)
     
   
