@@ -4,9 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
-
-
     
         {
             "name": "Python: Current File -v -z -f transform.txt -a 10.4.88.2",
@@ -64,6 +61,29 @@
             "args": [
                 "-v",
                 "-b"
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Current File -v -e -a 10.4.88.2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-v",
+                "-e",
+                "-a10.4.88.2"
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Current File -v -e",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-v",
+                "-e"
             ],
             "justMyCode": true
         },

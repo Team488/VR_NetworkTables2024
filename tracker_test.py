@@ -1,7 +1,7 @@
 import sys
 import ntcore
 from wpimath.geometry import Pose2d,Rotation2d,Translation2d
-from trackercal import calibrate, CalibrateOptions, calibrate_blue
+from trackercal import calibrate, CalibrateOptions, calibrate_blue, calibrate_red
 import tracker_sample
 import triad_openvr
 import math
@@ -44,6 +44,7 @@ parser.add_argument('-j', '--adjustToRobot', action = 'store_true', help='adjust
 parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
 parser.add_argument('-z', '--adjustToZero', action = 'store_true', help='set current location as (0,0)', default = False)
 parser.add_argument('-b', '--bluefield', action = 'store_true', help='calibrate blue field ', default = default.bluefield)
+parser.add_argument('-e', '--redfield', action = 'store_true', help='calibrate red field ', default = default.redfield)
   
 # Parse the arguments
 args = parser.parse_args()
@@ -81,22 +82,16 @@ if interval:
   
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
-    if args.bluefield:
-    #    if (tracker_1==None) or (tracker_2==None) or (tracker_3==None):
-    #     print("Error: unable to get all trackers")
-    #     print("Make sure all trackers are turned on for calibration")
-    #     print("Make sure all tracker USB dongles are plugged in to your PC")
-    #     if not args.offlineTest:
-    #         exit(1)
-            
-        calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
-        calibrate_options = CalibrateOptions(**calibrate_options_args)
-        R,s,t = calibrate_blue(tracker_1, tracker_2, tracker_3, calibrate_options)
-
-        # Save the transform calibration information to a file
-        with open("transform.txt", "w") as file:
-            file.write(str((R,s,t)))
     
+              
+    calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
+    calibrate_options = CalibrateOptions(**calibrate_options_args)
+        
+    if args.bluefield:
+        R,s,t = calibrate_blue(tracker_1, tracker_2, tracker_3, calibrate_options)
+    elif args.redfield:
+        R,s,t = calibrate_red(tracker_1, tracker_2, tracker_3, calibrate_options)
+
     else:
         if args.file == "":
             if not "tracker_1" in v.devices:
@@ -109,9 +104,9 @@ if interval:
             calibrate_options = CalibrateOptions(**calibrate_options_args)
             R,s,t = calibrate(tracker_1, calibrate_options)
 
-            # Save the transform calibration information to a file
-            with open("transform.txt", "w") as file:
-                file.write(str((R,s,t)))
+    # Save the transform calibration information to a file
+    with open("transform.txt", "w") as file:
+        file.write(str((R,s,t)))
    
     # initialize the translation offset to zero
     tx = 0
