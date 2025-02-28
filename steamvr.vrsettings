@@ -1,7 +1,7 @@
 {
    "DesktopUI" : {
       "pairing" : "569,261,800,600,0",
-      "settings_desktop" : "276,261,800,600,0"
+      "settings_desktop" : "285,261,800,600,0"
    },
    "DismissedWarnings" : {
       "DismissableWarning_UnknownHardwareDetected" : true
@@ -93,8 +93,8 @@
       "installID" : "2348681928830011086",
       "ipd" : 0.063,
       "ipdOffset" : 0,
-      "lastVersionNotice" : "2.8.8",
-      "lastVersionNoticeDate" : "1733878406",
+      "lastVersionNotice" : "2.9.6",
+      "lastVersionNoticeDate" : "1738865587",
       "loglevel" : 3,
       "neverKillProcesses" : false,
       "panelMask" : true,
