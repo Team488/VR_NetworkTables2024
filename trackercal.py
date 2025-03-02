@@ -304,7 +304,7 @@ def calibrate_blue(tracker_1, tracker_2, tracker_3, args):
         # difference between transformed points and apriltag_references should be small
         # calculate the error
         error = np.linalg.norm(np.array(transformed_points) - np.array(apriltag_references))
-        print(f"Error: {error}")
+        print(f"Calibration Error: {error} ; any value less than 0.02 is good.")
         #circle.plot_data_circle(transformed_points, 0, 0, 1.44)
 
     return R, s, t
