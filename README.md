@@ -8,7 +8,11 @@ This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.co
 - Install standard FRC software to configure a windows PC as an FRC software development and drive station system
 
 - Install AdvantageScope (if not already available)
-- Install HTC Vive SteamVR https://www.vive.com/us/support/vive/category_howto/setting-up-for-the-first-time.html
+- Install Steam from the official website https://store.steampowered.com/
+- Launch Steam, Step up an account, search for SteamVR in the Steam Store and Install SteamVR
+- Once the install for SteamVR is finished, exit out of the Steam Application, and also make sure it's not running in the background
+- next find the steamvr.vrsettings file by navigating to the C:\Program Files(x86)\Steam\config\ directory 
+- replace the vrsettings file in the config directory with the steamvr.vrsettings file that comes along with this repo. 
 - Install Python (if not already available)
 - Install Python packages
 
