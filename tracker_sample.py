@@ -4,12 +4,6 @@ import math
 start = time.time()
 t_zero = time.time()
 
-def __sleep(interval):       
-    sleep_time = interval-(time.time()-start)
-    if sleep_time>0:
-        time.sleep(sleep_time)
-
-
 def continuous_pose_response(t, radius, x_offset=0, y_offset=0, heading_offset=0, frequency=0.5):
     # Calculate both the position and the orientation of the tracker assuming that the tracker is traveling in a circle
     #  at radius r. Include support for an initial x,y offset for the center of the circle,
@@ -58,64 +52,4 @@ def get_offline_pose():
     pose = (-x, 0, y, 0, heading, 0)
     
     return pose
-
-def get_pose(tracker, offlineTest=False):
-    # x,y,z location and the appropriate Euler angles (in degrees)
-    if offlineTest:
-        pose = get_offline_pose()
-    else:
-        pose = tracker.get_pose_euler()
-    return pose
-    
-# Collect a pose from the tracker, but not more often than the specified time interval
-def collect_sample(tracker, interval, verbose=False, offlineTest=False):
-    global start, t_zero
-    
-    # Ensure we don't overcollect samples if user is calling this repeatedly.
-    __sleep(interval)
-    if verbose: 
-        print("collecting sample")
-
-    pose = get_pose(tracker, offlineTest)
-    start = time.time()
-    while not pose:
-        if verbose:
-            print("missed sample. collecting again.")
-        pose = get_pose(tracker, offlineTest)
-        __sleep(interval)
-        start = time.time()
-
-    if verbose:
-        print("collected sample: ", str(pose))
-
-    return pose 
-
-# Collect the horizontal coordinates of the tracker. 
-# The x and z axes are the horizontal coordinates when the tracker is 
-# oriented with the mounting screw hole facing down.
-def collect_position(tracker, interval, verbose = False, offlineTest=False):
-      x, y, z, roll, pitch, yaw = collect_sample(tracker, interval, verbose,offlineTest)
-      return (x, z)
-
-def check_for_trackers(v, offlineTest):
-    trackers = ["tracker_1", "tracker_2", "tracker_3"]
-    found_trackers = {}
-
-    for tracker in trackers:
-        if tracker in v.devices:
-            print(f"Success: {tracker} found")
-            found_trackers[tracker] = v.devices[tracker]
-        else:
-            print(f"Note: unable to get {tracker}")
-            found_trackers[tracker] = None
-
-    if all(tracker is None for tracker in found_trackers.values()):
-        print("Error: no trackers found")
-        if not offlineTest:
-            exit(1)
-    
-
-    return found_trackers["tracker_1"], found_trackers["tracker_2"], found_trackers["tracker_3"]
-
-
 
