@@ -7,15 +7,11 @@ import tracker_sample
 import trackercal
 import tracker_coordinate_transform
 import circle_fit as circle
+import numpy as np
 from wpimath.geometry import Pose2d,Rotation2d,Translation2d
 
 
 from functools import lru_cache
-
-def __sleep(interval):       
-    sleep_time = interval-(time.time()-start)
-    if sleep_time>0:
-        time.sleep(sleep_time)
 
 # Function to print out text but instead of starting a new line it will overwrite the existing line
 def update_text(txt):
@@ -162,21 +158,17 @@ class vr_tracked_device():
         
         # Collect a pose from the tracker, but not more often than the specified time interval
     def collect_sample(self, interval, verbose=False, offlineTest=False):
-        global start, t_zero
-        
         # Ensure we don't overcollect samples if user is calling this repeatedly.
-        __sleep(interval)
         if verbose: 
             print("collecting sample")
 
-        pose = self.get_pose(offlineTest)
-        start = time.time()
+        pose = None
+
         while not pose:
+            pose = self.get_pose(offlineTest)
+            time.sleep(interval)
             if verbose:
                 print("missed sample. collecting again.")
-            pose = self.get_pose(offlineTest)
-            __sleep(interval)
-            start = time.time()
 
         if verbose:
             print("collected sample: ", str(pose))

@@ -1,6 +1,6 @@
 import sys
 from wpimath.geometry import Pose2d,Rotation2d,Translation2d
-from trackercal import calibrate, CalibrateOptions, calibrate_blue, calibrate_red
+from trackercal import CalibrateOptions
 import tracker_sample
 import triad_openvr
 import math
@@ -41,7 +41,7 @@ parser.add_argument('-e', '--redfield', action = 'store_true', help='calibrate r
 args = parser.parse_args()
 
 inst = VRTrackersTable(args.address)
-table = inst.get_trackers_table()
+table = inst.trackers_table
 
 posePub_tracker_1 = table.getStructTopic("Tracker_1", Pose2d).publish()
 posePub_tracker_2 = table.getStructTopic("Tracker_2", Pose2d).publish()
@@ -119,7 +119,7 @@ if interval:
     if args.adjustToRobot:
         # Get the current robot pose, as self-reported via AdvantageKit, so that the tracker can be synchronized
         robotPoseSubX = inst.robot_pose_sub_x.subscribe(999.0)
-        robotPoseSub = inst.robot_pose_table().getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
+        robotPoseSub = inst.robot_pose_table.getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
         time.sleep(5) # Wait for the robot pose to be published. TODO: experiment with this value
         robotPose = robotPoseSub.get()
         cx = robotPose.X() 
@@ -144,5 +144,5 @@ if interval:
     while True:
        # Update the tracker poses
        posePubs = [posePub_tracker_1, posePub_tracker_2, posePub_tracker_3]
-       for i, pose in enumerate(trackers.get_all_tracker_wpi_poses(interval, R, s, t, args.verbose, args.offlineTest)):
+       for i, pose in trackers.get_all_tracker_wpi_poses(interval, R, s, t, heading_offset, args.verbose, args.offlineTest):
            posePubs[i].set(pose)
