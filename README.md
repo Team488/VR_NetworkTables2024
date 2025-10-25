@@ -8,7 +8,11 @@ This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.co
 - Install standard FRC software to configure a windows PC as an FRC software development and drive station system
 
 - Install AdvantageScope (if not already available)
-- Install HTC Vive SteamVR https://www.vive.com/us/support/vive/category_howto/setting-up-for-the-first-time.html
+- Install Steam from the official website https://store.steampowered.com/
+- Launch Steam, Step up an account, search for SteamVR in the Steam Store and Install SteamVR
+- Once the install for SteamVR is finished, exit out of the Steam Application, and also make sure it's not running in the background
+- next find the steamvr.vrsettings file by navigating to the C:\Program Files(x86)\Steam\config\ directory 
+- replace the vrsettings file in the config directory with the steamvr.vrsettings file that comes along with this repo. 
 - Install Python (if not already available)
 - Install Python packages
 
@@ -93,13 +97,13 @@ wpilib                   2024.3.2.1
 ### Live Tracking
 In this step, we will restart tracker_test using some options that will:
 1. Read in the calibration parameters from transform.txt (-f transform.txt)
-2. Zero the tracker coordinates to a know location (-z)
+2. the -z parameter sets the starting position of tracker 1 to april tag 18. will need to be adjusted for future FRC seasons
 3. Stream the tracker positions to a NetworkTables server at a specified IP Address (-a <IP Address>); typically 127.0.0.1 for running locally with a simulator, or an FRC address such as 10.4.88.2 when running on a live robot.
 
 To send to a NetworkTables server on your local machine, you must start the robot simulator
 - run the python robot simulator (see https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html)
    ## py -3 -m robotpy sim
-- Place tracker_1 in the predefined location for the -z option (e.g., a know location for an AprilTag; you will need to verify this location by looking at the code)
+- Place tracker_1 in the predefined location, currently april tag 18, for the -z option (e.g., a know location for an AprilTag; you will need to verify this location by looking at the code)
 - run tracker_test.py -v -z -f transform.txt -a 127.0.0.1
 - Hit ENTER as prompted in the terminal window
 
@@ -112,7 +116,7 @@ run AdvantageScope
 To send to a NetworkTables server on your robot, you must 
 - Boot the robot; this starts a NetworkTables server that will be visible on the robot's IP addess
 - Connect the PC that will be running tracker_test to the robot's WiFi (e.g., robot SSID or IP such as "10.4.88.2")
-- Place tracker_1 in the predefined location for the -z option (e.g., a know location for an AprilTag; you will need to verify this location by looking at the code)
+- Place tracker_1 in the predefined location, currently april tag 18, for the -z option (e.g., a know location for an AprilTag; you will need to verify this location by looking at the code)
 - run tracker_test.py -v -z -f transform.txt -a 10.4.88.2
 - Hit ENTER as prompted in the terminal window
 
