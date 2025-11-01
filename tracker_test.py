@@ -10,6 +10,7 @@ from tracker_coordinate_transform import *
 from tracker_sample import *
 from vr_trackers_table import *
 from trackers import Trackers
+from numpy import array
 
 heading_offset = 0
 interval = 1/250 # 250 Hz time interval for sampling tracker data
