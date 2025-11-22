@@ -1,10 +1,6 @@
 import unittest
 import numpy as np
 
-import numpy as np
-
-import numpy as np
-
 def find_transformation_params(points1, points2):
     points1 = np.array(points1)
     points2 = np.array(points2)

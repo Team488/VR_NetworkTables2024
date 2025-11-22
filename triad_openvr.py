@@ -3,6 +3,12 @@ import sys
 import openvr
 import math
 import json
+import tracker_sample
+import trackercal
+import tracker_coordinate_transform
+import circle_fit as circle
+import numpy as np
+from wpimath.geometry import Pose2d,Rotation2d,Translation2d
 
 
 from functools import lru_cache
@@ -142,6 +148,157 @@ class vr_tracked_device():
             return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
         else:
             return None
+    
+    def get_pose(self, offlineTest=False):
+    # x,y,z location and the appropriate Euler angles (in degrees)
+        if offlineTest:
+            return tracker_sample.get_offline_pose()
+        else:
+            return self.get_pose_euler()
+        
+        # Collect a pose from the tracker, but not more often than the specified time interval
+    def collect_sample(self, interval, verbose=False, offlineTest=False):
+        # Ensure we don't overcollect samples if user is calling this repeatedly.
+        if verbose: 
+            print("collecting sample")
+
+        pose = None
+
+        while not pose:
+            pose = self.get_pose(offlineTest)
+            time.sleep(interval)
+            if verbose:
+                print("missed sample. collecting again.")
+
+        if verbose:
+            print("collected sample: ", str(pose))
+
+        return pose 
+
+    # Calibrate the tracker with user input. 
+    def calibrate(self, args):
+        interval = 1/args.rate
+
+        if not args.infinite:
+            print("Set tracker to 0, r position. Press enter to continue.")
+            input()
+            x, y, z, roll, pitch, yaw = self.collect_sample(interval, args.verbose,args.offlineTest)
+            # negate x value to match the coordinate system
+            fixingPoint = (-x,z)
+            fixingAngle = pitch
+            print("Sweep tracker arm in a circle")
+
+
+        circle_samples = self.collect_circle(args.samples if not args.infinite else -1, args.distance / 100, interval, args.verbose, args.offlineTest)
+
+        if args.verbose:
+            # Save circle samples to file for debugging and testing
+            print("circle samples: " , str(circle_samples))
+            with open("circle_samples.txt", "w") as file:
+                file.write(str(circle_samples))
+
+        # negate x values from circle_samples
+        circle_samples = trackercal.negate_xvalues(circle_samples)
+            
+        # fit circle parameters to circle_samples
+        xc, yc, r, sigma = circle.standardLSQ(circle_samples)
+        if args.verbose:
+            # sanity check for the circle fit
+            print("Calculated circle with error: ", sigma, " xc: ", xc, " yc: ", yc, " r: ", r)
+            circle.plot_data_circle(circle_samples, 0, 0, r)
+
+            # measure rotation angle values for each element in circle_samples, relative to the first element 
+            # this is just a sanity check to make sure the circle_samples are correct
+            # the angle values should start at pi/2 and increase by 2pi/n for each sample
+            angle_values = trackercal.get_angle_values(circle_samples, xc, yc,initial_angle=np.pi/2)
+            trackercal.plot_samples(angle_values,"Angle Values vs. Sample Index", "Angle Value")
+
+        # Calculate the (x,y) points for the calibration circle in the FRC coordinates, using the known starting point (0,r),
+        # known center point (0,0), the radius r, and the angle values from VR sampled data points.
+        # clean up TODO: use the specified center point of the FRC circle, not (0,0)
+        FRC_circle_samples = trackercal.calculate_FRC_samples(circle_samples, xc, yc, r, xcFRC=0, ycFRC=0, initial_angle=np.pi/2)
+
+        # Calculate the transformation parameters between the circle samples and the FRC circle samples
+        # R is the rotation matrix, s is the scale factor, and t is the translation vector
+        R, s, t = trackercal.find_transformation_params(circle_samples, FRC_circle_samples)
+        if args.verbose:
+            print(f"Rotation matrix: {R}")
+            print(f"Scale factor: {s}")
+            print(f"Translation vector: {t}")
+
+        #  cleanup TODO: 
+            # use transform_coordinates to generate FRC_circle_samples_verify
+            # generate verification plots: overlay circles, x values, y values for both circle_samples and FRC_circle_samples_verify
+            
+            # cleanup TODO: use xOffset and yOffset to adjust the translation vector
+            # translation = (0 + args.xOffset - xc, 0 + args.yOffset - yc)
+
+        if args.verbose:
+            transformed_points = tracker_coordinate_transform.transform_samples(circle_samples, R, s, t)
+            circle.plot_data_circle(transformed_points, 0, 0, r)
+
+        return R, s, t
+    
+    def collect_circle(self, number, sample_distance, interval, verbose, offlineTest=False):
+        samples = []
+        run_forever = number < 0
+
+        x, z= self.collect_position(interval=interval, verbose=verbose, offlineTest=offlineTest)
+        prev_position = (x, z)
+        while run_forever or len(samples) < number:
+            x, z = self.collect_position(interval= interval, verbose = verbose, offlineTest=offlineTest)
+
+            px, pz = prev_position
+            if not run_forever:
+                distance = math.sqrt((px - x)**2 + (pz - z)**2)
+        
+                if verbose:
+                    print("distance between current and previous point: ", distance)
+        
+                if distance > sample_distance:
+                    if verbose:
+                        print("adding sample")
+
+                    samples.append((x, z))
+                
+                    prev_position = x, z
+        return samples
+    
+    # Collect the horizontal coordinates of the tracker. 
+    # The x and z axes are the horizontal coordinates when the tracker is 
+    # oriented with the mounting screw hole facing down.
+    def collect_position(self, interval, verbose = False, offlineTest=False):
+        x, y, z, roll, pitch, yaw = self.collect_sample( interval, verbose,offlineTest)
+        return (x, z)
+    
+    def update_wpiPose(self, interval, R, s, t, tx, ty, heading_offset, verbose=False, offlineTest=False):
+    # Get the current tracker position in FRC coordinates, and the heading in VR coordinates
+        xFRC, yFRC, headingVR = self.get_current_tracker_position(interval, R, s, t, verbose=False, offlineTest=offlineTest)
+
+        # Calculate the new angle value for the tracker pose using the tracker offset to match the initial robot heading
+        pose_heading = Rotation2d.fromDegrees(heading_offset - headingVR)
+        poseXY = Translation2d(xFRC + tx, yFRC + ty)
+        wpiPose = Pose2d(poseXY, pose_heading)
+        return wpiPose
+    
+    def get_current_tracker_position(self, interval, R, s, t, verbose=False, offlineTest=False):
+        xFRC, yFRC, pitchVR = 0.0, 0.0, 0.0
+        # The pitch value from the tracker is the heading in the robot coordinate system
+        # The x and z values from the tracker are used to calculate the x and y values in the robot coordinate system
+        if not (self == None):
+            xVR, yVR, zVR, rollVR, pitchVR, yawVR = self.collect_sample(interval=interval, verbose=verbose, offlineTest=offlineTest)
+            # Negate tracker x value before using for consistency with the calibration/transformation functions
+            x = -xVR
+            #x = xVR
+            y = zVR # The VR z-axis corresponds to the y-axis in the robot coordinate system
+            # Transform the tracker position to the robot coordinate system
+            pointVR =(x,y)
+            # Transform the tracker position to the robot coordinate system using the calibration parameters R, s, and t
+            # R is the rotation matrix, s is the scale factor, and t is the translation vector
+            xFRC, yFRC = tracker_coordinate_transform.transform_coordinates(pointVR,R,s,t)
+        
+        # Return the transformed x and y values in the robot coordinate system, and the pitch value in the VR coordinate system
+        return xFRC, yFRC, pitchVR
 
     def controller_state_to_dict(self, pControllerState):
         # This function is graciously borrowed from https://gist.github.com/awesomebytes/75daab3adb62b331f21ecf3a03b3ab46
