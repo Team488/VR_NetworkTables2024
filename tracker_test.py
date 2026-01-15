@@ -3,6 +3,7 @@ from wpimath.geometry import Pose2d,Rotation2d,Translation2d
 from trackercal import CalibrateOptions
 import tracker_sample
 import triad_openvr
+from april_tag_coordindates import APRIL_TAG
 import math
 import argparse
 import time
@@ -27,8 +28,7 @@ parser.add_argument('-v', '--verbose', action='store_true', help='Run the comman
 parser.add_argument('-s', '--samples', action='store', help='Number of samples to collect when creating the circle.', default = default.samples)
 parser.add_argument('-d', '--di stance', action='store', help='Distance between samples to collect, in centimeters', default = default.distance)
 parser.add_argument('-r', '--rate', action='store', help='Sampling rate of tracker.', default = default.rate)
-parser.add_argument('-x', '--xOffset', action='store', help='offset the x coordinate transform by x amount', default = default.xOffset)
-parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordinate transform by y amount', default = default.yOffset)
+parser.add_argument('-t', '--tagID', action='store', help='the id of the tag to set tracker 1\'s x and y coordinate when starting live tracking', default = APRIL_TAG.ID_18)
 parser.add_argument('-a', '--address', action='store', help='address of the robot to connect to', default = '127.0.0.1')
 #10.4.88.2, drive computer's IP address, 488_2024Comp, local Machine ip address :127.0.0.1
 parser.add_argument('-f', '--file', action='store', help='coordinate transform constants file to read', default = "")
@@ -90,12 +90,8 @@ if interval:
     if args.adjustToZero:
         # Set to zero for now TODO: make this variable
         # start line/upper wall blue side
-        #xFRC_init = 7.56
-        #yFRC_init = 8.05
-
-         # april tag 18
-        xFRC_init = 3.6576	
-        yFRC_init = 4.0259
+        xFRC_init = args.tagID.x / 39.3700787 # convert from inches to meters
+        yFRC_init = args.tagID.y / 39.3700787 # convert from inches to meters
         heading_init = 0.0 # degrees
         
         cx = xFRC_init
@@ -145,5 +141,5 @@ if interval:
     while True:
        # Update the tracker poses
        posePubs = [posePub_tracker_1, posePub_tracker_2, posePub_tracker_3]
-       for i, pose in trackers.get_all_tracker_wpi_poses(interval, R, s, t, heading_offset, args.verbose, args.offlineTest):
+       for i,pose in trackers.get_all_tracker_wpi_poses(interval, R, s, t, tx, ty, heading_offset, args.verbose, args.offlineTest):
            posePubs[i].set(pose)

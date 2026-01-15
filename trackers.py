@@ -40,8 +40,8 @@ class Trackers:
     
 
 
-    def get_all_tracker_wpi_poses(self, interval, R, s, t, heading_offset, verbose, offlineTest):
-        return [(i, self.found_trackers[tracker].update_wpiPose(interval, R, s, t, heading_offset, verbose, offlineTest)) for i,tracker in enumerate(self.trackers) if self.found_trackers[tracker] != None]
+    def get_all_tracker_wpi_poses(self, interval, R, s, t, tx, ty, heading_offset, verbose, offlineTest):
+        return [(i, self.found_trackers[tracker].update_wpiPose(interval, R, s, t,tx, ty, heading_offset, verbose, offlineTest)) for i,tracker in enumerate(self.trackers) if self.found_trackers[tracker] != None]
 
     # Calibrate the field using 3 known field points
     # tracker_1, tracker_2, tracker_3 are the trackers at the known field points
