@@ -1,27 +1,20 @@
 import sys
-import ntcore
 from wpimath.geometry import Pose2d,Rotation2d,Translation2d
-from trackercal import calibrate, CalibrateOptions, calibrate_blue, calibrate_red
+from trackercal import CalibrateOptions
 import tracker_sample
 import triad_openvr
+from april_tag_coordindates import APRIL_TAG
 import math
 import argparse
 import time
-import numpy as np
-from icecream import ic
 from tracker_coordinate_transform import *
 from tracker_sample import *
+from vr_trackers_table import *
+from trackers import Trackers
 from numpy import array
 
-def update_wpiPose(tracker,interval, R, s, t, tx, ty, verbose=False, offlineTest=False):
-    # Get the current tracker position in FRC coordinates, and the heading in VR coordinates
-    xFRC, yFRC, headingVR = get_current_tracker_position(tracker, interval, R, s, t, verbose=False, offlineTest=args.offlineTest)
-
-    # Calculate the new angle value for the tracker pose using the tracker offset to match the initial robot heading
-    pose_heading = Rotation2d.fromDegrees(heading_offset - headingVR)
-    poseXY = Translation2d(xFRC + tx, yFRC + ty)
-    wpiPose = Pose2d(poseXY, pose_heading)
-    return wpiPose
+heading_offset = 0
+interval = 1/250 # 250 Hz time interval for sampling tracker data
 
 #inst.setServer("localhost")
 #inst.setServer("10.4.88.2")
@@ -35,8 +28,7 @@ parser.add_argument('-v', '--verbose', action='store_true', help='Run the comman
 parser.add_argument('-s', '--samples', action='store', help='Number of samples to collect when creating the circle.', default = default.samples)
 parser.add_argument('-d', '--di stance', action='store', help='Distance between samples to collect, in centimeters', default = default.distance)
 parser.add_argument('-r', '--rate', action='store', help='Sampling rate of tracker.', default = default.rate)
-parser.add_argument('-x', '--xOffset', action='store', help='offset the x coordinate transform by x amount', default = default.xOffset)
-parser.add_argument('-y', '--yOffset', action='store', help='offset the y coordinate transform by y amount', default = default.yOffset)
+parser.add_argument('-t', '--tagID', action='store', help='the id of the tag to set tracker 1\'s x and y coordinate when starting live tracking', default = APRIL_TAG.ID_18)
 parser.add_argument('-a', '--address', action='store', help='address of the robot to connect to', default = '127.0.0.1')
 #10.4.88.2, drive computer's IP address, 488_2024Comp, local Machine ip address :127.0.0.1
 parser.add_argument('-f', '--file', action='store', help='coordinate transform constants file to read', default = "")
@@ -49,12 +41,8 @@ parser.add_argument('-e', '--redfield', action = 'store_true', help='calibrate r
 # Parse the arguments
 args = parser.parse_args()
 
-
-inst = ntcore.NetworkTableInstance.getDefault()
-inst.setServer(args.address)
-inst.startClient4("VR_trackers")
-
-table = inst.getTable("Trackers")
+inst = VRTrackersTable(args.address)
+table = inst.trackers_table
 
 posePub_tracker_1 = table.getStructTopic("Tracker_1", Pose2d).publish()
 posePub_tracker_2 = table.getStructTopic("Tracker_2", Pose2d).publish()
@@ -64,10 +52,6 @@ R = [[1, 0], [0, 1]]    # default to zero rotation
 s = 1.0                 # default to no scaling
 t = [0.0, 0.0]          # default to no translation
 
-
-heading_offset = 0
-interval = 1/250 # 250 Hz time interval for sampling tracker data
-
 # Get the calibration information from a previous calibration step that was saved to a file
 # Default file name is "transform.txt"
 if args.file != "":
@@ -76,33 +60,23 @@ if args.file != "":
 
 if interval:
     
-    v = triad_openvr.triad_openvr(configfile_path="./config.json")
-    tracker_1, tracker_2, tracker_3 = check_for_trackers(v,args.offlineTest)
-    
+    trackers = Trackers(configfile_path="./config.json")
+    trackers.check_for_trackers(args.offlineTest)
   
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
     
-              
     calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
     calibrate_options = CalibrateOptions(**calibrate_options_args)
         
     if args.bluefield:
-        R,s,t = calibrate_blue(tracker_1, tracker_2, tracker_3, calibrate_options)
+        R,s,t = trackers.calibrate_blue(calibrate_options)
     elif args.redfield:
-        R,s,t = calibrate_red(tracker_1, tracker_2, tracker_3, calibrate_options)
+        R,s,t = trackers.calibrate_red(calibrate_options)
 
     else:
         if args.file == "":
-            if not "tracker_1" in v.devices:
-                print("Error: unable to get tracker 1")
-                print("Make sure Tracker 1 is turned on for calibration")
-                print("Make sure the tracker 1 USB dongle is plugged in to your PC")
-                if not args.offlineTest:
-                    exit(1)
-            calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
-            calibrate_options = CalibrateOptions(**calibrate_options_args)
-            R,s,t = calibrate(tracker_1, calibrate_options)
+            R,s,t = trackers.get_tracker_1_calibration(calibrate_options)
 
     # Save the transform calibration information to a file
     with open("transform.txt", "w") as file:
@@ -116,18 +90,14 @@ if interval:
     if args.adjustToZero:
         # Set to zero for now TODO: make this variable
         # start line/upper wall blue side
-        #xFRC_init = 7.56
-        #yFRC_init = 8.05
-
-         # april tag 18
-        xFRC_init = 3.6576	
-        yFRC_init = 4.0259
+        xFRC_init = args.tagID.x / 39.3700787 # convert from inches to meters
+        yFRC_init = args.tagID.y / 39.3700787 # convert from inches to meters
         heading_init = 0.0 # degrees
         
         cx = xFRC_init
         cy = yFRC_init 
         
-        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=True,offlineTest=args.offlineTest)
+        xFRC, yFRC, headingVR = trackers.get_tracker_1_pos(interval, R, s, t, True, args.offlineTest)
         
         # Calculate the offset to sync the tracker with the robot
         tx, ty = cx - xFRC, cy - yFRC
@@ -145,15 +115,14 @@ if interval:
     # Synchronize the pose position between the robot and the tracker
     if args.adjustToRobot:
         # Get the current robot pose, as self-reported via AdvantageKit, so that the tracker can be synchronized
-        robotPoseTable = inst.getTable("/AdvantageKit/RealOutputs/PoseSubsystem")
-        robotPoseSubX = robotPoseTable.getFloatTopic("/AdvantageKit/RealOutputs/PoseSubsystem/RobotPose/translation/x").subscribe(999.0)
-        robotPoseSub = robotPoseTable.getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
+        robotPoseSubX = inst.robot_pose_sub_x.subscribe(999.0)
+        robotPoseSub = inst.robot_pose_table.getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
         time.sleep(5) # Wait for the robot pose to be published. TODO: experiment with this value
         robotPose = robotPoseSub.get()
         cx = robotPose.X() 
         cy = robotPose.Y() 
         
-        xFRC, yFRC, headingVR = get_current_tracker_position(tracker_1, interval, R, s, t, verbose=True,offlineTest=args.offlineTest)
+        xFRC, yFRC, headingVR = trackers.get_tracker_1_pos(interval, R, s, t, True, args.offlineTest)
         
         # Calculate the offset to sync the tracker with the robot
         tx, ty = cx - xFRC, cy - yFRC
@@ -171,10 +140,6 @@ if interval:
 
     while True:
        # Update the tracker poses
-        wpiPose_1 = update_wpiPose(tracker_1,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
-        wpiPose_2 = update_wpiPose(tracker_2,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
-        wpiPose_3 = update_wpiPose(tracker_3,interval, R, s, t, tx, ty, verbose=args.verbose, offlineTest=args.offlineTest)
-        
-        posePub_tracker_1.set(wpiPose_1)
-        posePub_tracker_2.set(wpiPose_2)
-        posePub_tracker_3.set(wpiPose_3)
+       posePubs = [posePub_tracker_1, posePub_tracker_2, posePub_tracker_3]
+       for i,pose in trackers.get_all_tracker_wpi_poses(interval, R, s, t, tx, ty, heading_offset, args.verbose, args.offlineTest):
+           posePubs[i].set(pose)
