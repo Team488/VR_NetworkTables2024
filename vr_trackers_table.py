@@ -9,4 +9,3 @@ class VRTrackersTable:
         self.trackers_table = self.inst.getTable("Trackers")
         self.robot_pose_table = self.inst.getTable("/AdvantageKit/RealOutputs/PoseSubsystem")
         self.pose_sub_x = self.robot_pose_table.getFloatTopic("/AdvantageKit/RealOutputs/PoseSubsystem/RobotPose/translation/x")
-    

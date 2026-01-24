@@ -17,7 +17,7 @@ elif len(sys.argv) == 2:
 else:
     print("Invalid number of arguments")
     interval = False
-    
+
 if interval:
     while(True):
         start = time.time()

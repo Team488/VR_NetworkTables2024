@@ -14,7 +14,7 @@ from trackers import Trackers
 
 
 class CalibrateOptions:
-    def __init__(self, verbose = False, samples = 100, distance = 5, rate = 250, 
+    def __init__(self, verbose = False, samples = 100, distance = 5, rate = 250,
                  infinite = False, xOffset = 3.6576, yOffset = 4.0259, offlineTest=False, bluefield=False, redfield=False) -> None:
         self.verbose = verbose
         self.samples = samples
@@ -24,7 +24,7 @@ class CalibrateOptions:
         self.xOffset = xOffset
         self.yOffset = yOffset
         self.offlineTest = offlineTest
-        self.bluefield = bluefield 
+        self.bluefield = bluefield
         self.redfield = redfield
 
 
@@ -48,7 +48,7 @@ def plot_samples(samples, title, axislabel):
     plt.ylabel(axislabel)
     plt.grid(True)
     plt.show()
-    return 
+    return
 
 def plot_samples_2(samples1, samples2, title, axislabel):
     # Plot
@@ -61,11 +61,11 @@ def plot_samples_2(samples1, samples2, title, axislabel):
     plt.show()
     return
 
-def plot_circles_from_samples(samples1_x, samples1_y, samples2_x, samples2_y, 
+def plot_circles_from_samples(samples1_x, samples1_y, samples2_x, samples2_y,
                          title, xaxislabel, yaxislabel):
     fig, ax = plt.subplots()
     # Set aspect to be square
-    ax.set_aspect('equal') 
+    ax.set_aspect('equal')
     ax.plot(samples1_x, samples1_y, marker='o')
     ax.plot(samples2_x, samples2_y, marker='x')
     plt.title(title)
@@ -166,12 +166,12 @@ def calculate_angle(p1, p2):
     x2, y2 = p2
     angle1 = math.atan2(y1, x1)
     angle2 = math.atan2(y2, x2)
-    
+
     # Calculate the difference in angles
     angle = angle2 - angle1
     return angle
 
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='trackercal', description='A command line application for tracking and calculating events.')
 
@@ -187,10 +187,10 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test with the trackers offline (no trackers required)', default = default.offlineTest)
     parser.add_argument('-b', '--bluefield', action = 'store_true', help='calibrate blue field ', default = default.bluefield)
     parser.add_argument('-e', '--redfield', action = 'store_true', help='calibrate red field ', default = default.redfield)
-    
+
     # Parse the arguments
     args = parser.parse_args()
-    
+
     trackers = Trackers(configfile_path=None)
     trackers.check_for_trackers(args.offlineTest)
 

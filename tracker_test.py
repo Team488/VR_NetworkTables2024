@@ -37,7 +37,7 @@ parser.add_argument('-o', '--offlineTest', action = 'store_true', help='test wit
 parser.add_argument('-z', '--adjustToZero', action = 'store_true', help='set current location as (0,0)', default = False)
 parser.add_argument('-b', '--bluefield', action = 'store_true', help='calibrate blue field ', default = default.bluefield)
 parser.add_argument('-e', '--redfield', action = 'store_true', help='calibrate red field ', default = default.redfield)
-  
+
 # Parse the arguments
 args = parser.parse_args()
 
@@ -59,16 +59,16 @@ if args.file != "":
         (R,s,t) = eval(file.read())
 
 if interval:
-    
+
     trackers = Trackers(configfile_path="./config.json")
     trackers.check_for_trackers(args.offlineTest)
-  
+
     # Calibrate and save calibration information to the file "transform.txt"
     # Tracker 1 should be used for calibration
-    
+
     calibrate_options_args = {key: value for key, value in vars(args).items() if key in CalibrateOptions.__init__.__code__.co_varnames}
     calibrate_options = CalibrateOptions(**calibrate_options_args)
-        
+
     if args.bluefield:
         R,s,t = trackers.calibrate_blue(calibrate_options)
     elif args.redfield:
@@ -81,31 +81,31 @@ if interval:
     # Save the transform calibration information to a file
     with open("transform.txt", "w") as file:
         file.write(str((R,s,t)))
-   
+
     # initialize the translation offset to zero
     tx = 0
     ty = 0
-    
+
     # Synchronize the pose position between the robot and the tracker
     if args.adjustToZero:
         # Set to zero for now TODO: make this variable
         # start line/upper wall blue side
-        xFRC_init = args.tagID.x / 39.3700787 # convert from inches to meters
-        yFRC_init = args.tagID.y / 39.3700787 # convert from inches to meters
+        xFRC_init = args.tagID.x
+        yFRC_init = args.tagID.y
         heading_init = 0.0 # degrees
-        
+
         cx = xFRC_init
-        cy = yFRC_init 
-        
+        cy = yFRC_init
+
         xFRC, yFRC, headingVR = trackers.get_tracker_1_pos(interval, R, s, t, True, args.offlineTest)
-        
+
         # Calculate the offset to sync the tracker with the robot
         tx, ty = cx - xFRC, cy - yFRC
         if args.verbose:
             print("current robot position (cx,cy): ",cx, cy)
             print ("current tracker position (x,y): ",xFRC, yFRC)
             print ("offset to sync (tx,ty): ",tx, ty)
-              
+
         # Calculate the rotation offset to sync the tracker with the robot
         heading_offset = headingVR - heading_init
 
@@ -119,24 +119,24 @@ if interval:
         robotPoseSub = inst.robot_pose_table.getStructTopic("RobotPose", Pose2d).subscribe(Pose2d(999, 999, 999))
         time.sleep(5) # Wait for the robot pose to be published. TODO: experiment with this value
         robotPose = robotPoseSub.get()
-        cx = robotPose.X() 
-        cy = robotPose.Y() 
-        
+        cx = robotPose.X()
+        cy = robotPose.Y()
+
         xFRC, yFRC, headingVR = trackers.get_tracker_1_pos(interval, R, s, t, True, args.offlineTest)
-        
+
         # Calculate the offset to sync the tracker with the robot
         tx, ty = cx - xFRC, cy - yFRC
         if args.verbose:
             print("current robot position (cx,cy): ",cx, cy)
             print ("current tracker position (x,y): ",xFRC, yFRC)
             print ("offset to sync (tx,ty): ",tx, ty)
-              
+
         # Calculate the rotation offset to sync the tracker with the robot
         heading_offset = headingVR - robotPose.rotation().degrees()
 
         print("Hit Enter to continue")
         input()
-        
+
 
     while True:
        # Update the tracker poses

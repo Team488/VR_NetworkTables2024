@@ -22,9 +22,9 @@ def continuous_pose_response(t, radius, x_offset=0, y_offset=0, heading_offset=0
 
 # get and euler pose from the tracker or from an offline function, depending on the mode set by the offlineTest flag
 def get_offline_pose():
-    # return a continuous pose response at a frequency of 0.5 Hz, using t_zero as the time reference. 
+    # return a continuous pose response at a frequency of 0.5 Hz, using t_zero as the time reference.
     # Calculate both the position and the orientation of the tracker assuming that the tracker is traveling in a circle
-    # at radius r. Include support for an initial x,y offset for the center of the circle, 
+    # at radius r. Include support for an initial x,y offset for the center of the circle,
     # and an initial angle offset for the orientation of the tracker.
     # For each time step, keep the orientation pointing at the center of the circle.
     global t_zero
@@ -50,6 +50,5 @@ def get_offline_pose():
     # z maps to y
     # pitch maps to heading
     pose = (-x, 0, y, 0, heading, 0)
-    
-    return pose
 
+    return pose

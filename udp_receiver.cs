@@ -19,7 +19,7 @@ public class udp_tracked_object : MonoBehaviour {
         receiveThread.IsBackground = true;
         receiveThread.Start();
     }
-	
+
 	// Update is called once per frame
 	void Update () {
         transform.position = new Vector3((float) float_array[0], (float)float_array[1], (float)float_array[2]);

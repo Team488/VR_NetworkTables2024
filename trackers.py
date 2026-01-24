@@ -35,9 +35,9 @@ class Trackers:
             print("Make sure the tracker 1 USB dongle is plugged in to your PC")
             if not calibrate_options.offlineTest:
                 exit(1)
-                
+
         return self.found_trackers["tracker_1"].calibrate(calibrate_options)
-    
+
 
 
     def get_all_tracker_wpi_poses(self, interval, R, s, t, tx, ty, heading_offset, verbose, offlineTest):
@@ -46,7 +46,7 @@ class Trackers:
     # Calibrate the field using 3 known field points
     # tracker_1, tracker_2, tracker_3 are the trackers at the known field points
     # Tracker_1: AT#18 (3.6576, 4.0259)
-    # Tracker_2: AT#20 (4.90474, 4.745482), 
+    # Tracker_2: AT#20 (4.90474, 4.745482),
     # Tracker_3: AT#22 (4.90474, 3.306318)
     def calibrate_blue(self, args):
         interval = 1/args.rate
@@ -62,7 +62,7 @@ class Trackers:
                 x, y, z, roll, pitch, yaw = tracker.collect_sample(interval, args.verbose,args.offlineTest)
                 apriltag_samples.append((-x, z))
                 print(f"Tracker {tracker} at position: ({-x},{z})")
-            
+
         if args.verbose:
             # Save circle samples to file for debugging and testing
             print("AprilTag samples: " , str(apriltag_samples))
@@ -70,8 +70,8 @@ class Trackers:
                 file.write(str(apriltag_samples))
         # April Tag reference points for the blue alliance side, in meters for AT#18, AT#20, AT#22
         apriltag_references = [(3.6576, 4.0259), (4.90474, 4.745482), (4.90474, 3.306318)]
-            
-        
+
+
         # Calculate the transformation parameters between the circle samples and the FRC circle samples
         # R is the rotation matrix, s is the scale factor, and t is the translation vector
         R, s, t = trackercal.find_transformation_params(apriltag_samples, apriltag_references)
@@ -93,7 +93,7 @@ class Trackers:
     # Calibrate the field using 3 known field points
     # tracker_1, tracker_2, tracker_3 are the trackers at the known field points
     # Tracker_1: AT#7 (13.890498, 4.0259)
-    # Tracker_2: AT#9 (12.643358, 4.745482), 
+    # Tracker_2: AT#9 (12.643358, 4.745482),
     # Tracker_3: AT#11 (12.643358, 3.306318)
     def calibrate_red(self, args):
         interval = 1/args.rate
@@ -109,7 +109,7 @@ class Trackers:
                 x, y, z, roll, pitch, yaw = tracker.collect_sample(interval, args.verbose,args.offlineTest)
                 apriltag_samples.append((-x, z))
                 print(f"Tracker {tracker} at position: ({-x},{z})")
-            
+
         if args.verbose:
             # Save circle samples to file for debugging and testing
             print("AprilTag samples: " , str(apriltag_samples))
@@ -117,8 +117,8 @@ class Trackers:
                 file.write(str(apriltag_samples))
         # April Tag reference points for the blue alliance side, in meters for AT#18, AT#20, AT#22
         apriltag_references = [(13.890498, 4.0259), (12.643358, 4.745482), (12.643358, 3.306318)]
-            
-        
+
+
         # Calculate the transformation parameters between the circle samples and the FRC circle samples
         # R is the rotation matrix, s is the scale factor, and t is the translation vector
         R, s, t = trackercal.find_transformation_params(apriltag_samples, apriltag_references)
@@ -136,4 +136,3 @@ class Trackers:
             #circle.plot_data_circle(transformed_points, 0, 0, 1.44)
 
         return R, s, t
-    
