@@ -28,5 +28,3 @@ class EasyNetworkTableExample(wpilib.TimedRobot):
     #     self.yPub.set(self.y)
     #     self.x += 0.05
     #     self.y += 1.0
-
-

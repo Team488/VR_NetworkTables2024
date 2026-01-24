@@ -1,8 +1,8 @@
 # VR_NetworkTables2024
-This project provides for integration of virtual reality hardware and RoboRIO network tables. The objective of this integration is to provide a way of using VR hardware tracker technology to deliver an independent source of pose ground truth in the pursuit of better robot localization. 
+This project provides for integration of virtual reality hardware and RoboRIO network tables. The objective of this integration is to provide a way of using VR hardware tracker technology to deliver an independent source of pose ground truth in the pursuit of better robot localization.
 
 ## Hardware
-This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.com/products/additional-tracker). This is a 6 DOF tracker that works with SteamVR lighthouse technology. 
+This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.com/products/additional-tracker). This is a 6 DOF tracker that works with SteamVR lighthouse technology.
 ## Configuration
 - This was tested using the FRC WPILib version of vscode.
 - Install standard FRC software to configure a windows PC as an FRC software development and drive station system
@@ -11,15 +11,15 @@ This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.co
 - Install Steam from the official website https://store.steampowered.com/
 - Launch Steam, Step up an account, search for SteamVR in the Steam Store and Install SteamVR
 - Once the install for SteamVR is finished, exit out of the Steam Application, and also make sure it's not running in the background
-- next find the steamvr.vrsettings file by navigating to the C:\Program Files(x86)\Steam\config\ directory 
-- replace the vrsettings file in the config directory with the steamvr.vrsettings file that comes along with this repo. 
+- next find the steamvr.vrsettings file by navigating to the C:\Program Files(x86)\Steam\config\ directory
+- replace the vrsettings file in the config directory with the steamvr.vrsettings file that comes along with this repo.
 - Install Python (if not already available)
 - Install Python packages
 
 - Follow this to install Python packages for FRC: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/python-setup.html
 
 - pip install openvr OR download the installer at https://github.com/cmbruns/pyopenvr/releases
-  
+
 ```
 Here is a pip list from a known working environment
 Package                  Version
@@ -113,7 +113,7 @@ run AdvantageScope
   - "+" Odometry view
   - drag tracker_1 and or tracker_2 pose to view
 
-To send to a NetworkTables server on your robot, you must 
+To send to a NetworkTables server on your robot, you must
 - Boot the robot; this starts a NetworkTables server that will be visible on the robot's IP addess
 - Connect the PC that will be running tracker_test to the robot's WiFi (e.g., robot SSID or IP such as "10.4.88.2")
 - Place tracker_1 in the predefined location, currently april tag 18, for the -z option (e.g., a know location for an AprilTag; you will need to verify this location by looking at the code)
@@ -130,7 +130,7 @@ run AdvantageScope
 - Mount tracker_1 or tracker_2 to the center of the robot to track its pose in real time
 - Use tracker_1 or tracker_2 to check the location of landmarks on the field, such as AprilTags
 
- 
+
 ## References
 - https://github.com/TriadSemi/triad_openvr
 - https://github.com/cmbruns/pyopenvr
