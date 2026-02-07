@@ -11,7 +11,6 @@ dependencies = [
     "icecream>=2.1.10",
     "matplotlib>=3.10.8",
     "openvr>=2.12.1401",
-    "pyopenxr>=1.1.5301",
     "robotpy>=2026.2.1",
 ]
 

@@ -18,6 +18,8 @@ This has been tested using a VR tracker from Tundra Labs (https://tundra-labs.co
 
 - Follow this to install Python packages for FRC: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/python-setup.html
 
+- uv package manager installation guide: https://docs.astral.sh/uv/getting-started/installation/
+
 - uv add openvr OR download the installer at https://github.com/cmbruns/pyopenvr/releases
 
 ```
@@ -30,7 +32,6 @@ colorama                 0.4.6
 icecream                 2.1.10
 matplotlib               3.10.8
 openvr                   2.12.1401
-pyopenxr                 1.1.5301
 robotpy                  2026.2.1
 ```
 
