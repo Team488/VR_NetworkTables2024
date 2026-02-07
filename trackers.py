@@ -2,6 +2,7 @@ import tracker_coordinate_transform
 import trackercal
 import triad_openvr
 import numpy as np
+from april_tag_coordindates import APRIL_TAG
 
 class Trackers:
 
@@ -45,17 +46,14 @@ class Trackers:
 
     # Calibrate the field using 3 known field points
     # tracker_1, tracker_2, tracker_3 are the trackers at the known field points
-    # Tracker_1: AT#18 (3.6576, 4.0259)
-    # Tracker_2: AT#20 (4.90474, 4.745482),
-    # Tracker_3: AT#22 (4.90474, 3.306318)
     def calibrate_blue(self, args):
         interval = 1/args.rate
         if not args.infinite:
             apriltag_samples = []
             print("Localize trackers at known field points on blue alliance side.")
-            print ("Place Tracker_1 at  AprilTag #18 (3.6576, 4.0259)")
-            print ("Place Tracker_2 at  AprilTag #20 (4.90474, 4.745482)")
-            print ("Place Tracker_3 at  AprilTag #22 (4.90474, 3.306318)")
+            print (f"Place Tracker_1 at  AprilTag #18 {(APRIL_TAG.ID_18.x, APRIL_TAG.ID_18.y)}")
+            print (f"Place Tracker_2 at  AprilTag #20 {(APRIL_TAG.ID_20.x, APRIL_TAG.ID_20.y)}")
+            print (f"Place Tracker_3 at  AprilTag #21 {(APRIL_TAG.ID_21.x, APRIL_TAG.ID_21.y)}")
             print("Press enter to continue.")
             input()
             for tracker in self.found_trackers.values():
@@ -68,8 +66,8 @@ class Trackers:
             print("AprilTag samples: " , str(apriltag_samples))
             with open("AprilTag_samples_blue.txt", "w") as file:
                 file.write(str(apriltag_samples))
-        # April Tag reference points for the blue alliance side, in meters for AT#18, AT#20, AT#22
-        apriltag_references = [(3.6576, 4.0259), (4.90474, 4.745482), (4.90474, 3.306318)]
+        # April Tag reference points for the blue alliance side, in meters for AT#18, AT#20, AT#21
+        apriltag_references = [(APRIL_TAG.ID_18.x, APRIL_TAG.ID_18.y), (APRIL_TAG.ID_20.x, APRIL_TAG.ID_20.y), (APRIL_TAG.ID_21.x, APRIL_TAG.ID_21.y)]
 
 
         # Calculate the transformation parameters between the circle samples and the FRC circle samples
@@ -100,9 +98,9 @@ class Trackers:
         if not args.infinite:
             apriltag_samples = []
             print("Localize trackers at known field points on blue alliance side.")
-            print ("Place Tracker_1 at  AprilTag #7  (13.890498, 4.0259)")
-            print ("Place Tracker_2 at  AprilTag #9  (12.643358, 4.745482)")
-            print ("Place Tracker_3 at  AprilTag #11 (12.643358, 3.306318)")
+            print (f"Place Tracker_1 at  AprilTag #2 {(APRIL_TAG.ID_2.x, APRIL_TAG.ID_2.y)}")
+            print (f"Place Tracker_2 at  AprilTag #4 {(APRIL_TAG.ID_4.x, APRIL_TAG.ID_4.y)}")
+            print (f"Place Tracker_3 at  AprilTag #5 {(APRIL_TAG.ID_5.x, APRIL_TAG.ID_5.y)}")
             print("Press enter to continue.")
             input()
             for tracker in self.found_trackers.values():
@@ -110,13 +108,12 @@ class Trackers:
                 apriltag_samples.append((-x, z))
                 print(f"Tracker {tracker} at position: ({-x},{z})")
 
-        if args.verbose:
             # Save circle samples to file for debugging and testing
             print("AprilTag samples: " , str(apriltag_samples))
             with open("AprilTag_samples_red.txt", "w") as file:
                 file.write(str(apriltag_samples))
         # April Tag reference points for the blue alliance side, in meters for AT#18, AT#20, AT#22
-        apriltag_references = [(13.890498, 4.0259), (12.643358, 4.745482), (12.643358, 3.306318)]
+        apriltag_references = [(APRIL_TAG.ID_2.x, APRIL_TAG.ID_2.y), (APRIL_TAG.ID_4.x, APRIL_TAG.ID_4.y), (APRIL_TAG.ID_5.x, APRIL_TAG.ID_5.y)]
 
 
         # Calculate the transformation parameters between the circle samples and the FRC circle samples

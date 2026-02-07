@@ -1,7 +1,19 @@
-#
-# Use this configuration file to control what RobotPy packages are installed
-# on your RoboRIO
-#
+[project]
+name = "vr-networktables2024"
+version = "1.0.0"
+description = "Integration of virtual reality hardware and robot network tables to provide localization ground truth"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "appdirs>=1.4.4",
+    "circle-fit>=0.2.1",
+    "colorama>=0.4.6",
+    "icecream>=2.1.10",
+    "matplotlib>=3.10.8",
+    "openvr>=2.12.1401",
+    "pyopenxr>=1.1.5301",
+    "robotpy>=2026.2.1",
+]
 
 [tool.robotpy]
 
